@@ -1,0 +1,89 @@
+name: Push Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Parse Latest Changelog
+        id: parse_changelog
+        shell: python
+        run: |
+          import os
+          import re
+
+          with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
+              content = f.read()
+
+          # Match the first version header, e.g., ## [6.0.0.BETA.04]
+          match = re.search(r'##\s*\[([^\]]+)\]', content)
+          if not match:
+              print("::error::No version header found in CHANGELOG.md")
+              exit(1)
+
+          version = match.group(1)
+          
+          # Extract changelog body up to the next ## header
+          start_pos = match.end()
+          next_match = re.search(r'##\s*\[', content[start_pos:])
+          if next_match:
+              body = content[start_pos:start_pos + next_match.start()].strip()
+          else:
+              body = content[start_pos:].strip()
+
+          # Set GITHUB_OUTPUT variables
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+              out.write(f"version={version}\n")
+              # Write multiline release notes body safely
+              out.write("body<<EOF\n")
+              out.write(body + "\n")
+              out.write("EOF\n")
+
+      - name: Fetch Tags and Check Existence
+        id: check_tag
+        run: |
+          git fetch --tags
+          VERSION="${{ steps.parse_changelog.outputs.version }}"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag v$VERSION already exists. Skipping release creation."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Tag v$VERSION does not exist. Proceeding with release."
+          fi
+
+      - name: Configure Git
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Tag Version
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          VERSION="${{ steps.parse_changelog.outputs.version }}"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.parse_changelog.outputs.version }}
+          name: v${{ steps.parse_changelog.outputs.version }}
+          body: ${{ steps.parse_changelog.outputs.body }}
+          draft: false
+          prerelease: false
+          files: |
+            DuoXJS.user.js
+            DuoXJS.meta.js
