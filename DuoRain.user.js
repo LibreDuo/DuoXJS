@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                DuoRain
 // @namespace           https://github.com/DuoXPy/DuoRain
-// @version             6.0.0.BETA.02
+// @version             6.0.0.BETA.03
 // @description         The Ultimate Automation Tool for Duolingo
 // @author              OracleMythix & oxGorou
 // @license MIT
@@ -124,8 +124,8 @@
       "https://d35aaqx5ub95lt.cloudfront.net/images/icons/398e4298a3b39ce566050e5c041949ef.svg",
   };
 
-  const drVersion = "6.0.0 Beta 02";
-  const drScriptVersion = "6.0.0.BETA.02";
+  const drVersion = "6.0.0 Beta 03";
+  const drScriptVersion = "6.0.0.BETA.03";
   const drUpdateMetaUrl =
     "https://raw.githubusercontent.com/DuoXPy/DuoRain/main/DuoRain.meta.js";
   const drUpdatePageUrl = "https://github.com/DuoXPy/DuoRain";
@@ -746,6 +746,7 @@
             --DR-green: 50, 215, 75;
             --DR-red: 255, 69, 58;
             --DR-orange: 255, 159, 10;
+            --dr-link-color: rgb(var(--DR-blue));
 
             --DR-s1: 4px;
             --DR-s2: 8px;
@@ -984,6 +985,7 @@
             --dr-card-bg: rgba(255, 255, 255, 0.05);
             --dr-card-hover: rgba(var(--DR-blue), 0.15);
             --dr-card-border: rgba(55, 70, 79, 1);
+            --dr-link-color: #58a6ff;
         }
 
         #duorain-hide-button.dr-light {
@@ -2931,6 +2933,16 @@
                             <div class="DR_Divider"></div>
                             <div class="DR_Setting_Row">
                                 <div class="DR_Row_Text">
+                                    <p class="DR_T1 DR_NoSel">Safe Streak Farming</p>
+                                    <p class="DR_T2 DR_NoSel">Prevent streak exceeding account age</p>
+                                </div>
+                                <div class="DR_HStack_8" style="width: auto;">
+                                    <div class="DR_Toggle" id="DR_SafeStreak_Toggle"><div class="DR_Toggle_Knob"></div></div>
+                                </div>
+                            </div>
+                            <div class="DR_Divider"></div>
+                            <div class="DR_Setting_Row">
+                                <div class="DR_Row_Text">
                                     <p class="DR_T1 DR_NoSel">EZ Quiz</p>
                                     <p class="DR_T2 DR_NoSel">Enable custom lesson &amp; instant story</p>
                                 </div>
@@ -2945,9 +2957,9 @@
                                     <p class="DR_T2 DR_NoSel">Set the number of questions for custom lessons</p>
                                 </div>
                                 <div class="DR_HStack_8" style="width: auto;">
-                                    <div class="DR_Select dropup" id="DR_EZQuizLength_Select" data-value="default" style="width: 146px; font-size: 13px;">
+                                    <div class="DR_Select dropup" id="DR_EZQuizLength_Select" data-value="5" style="width: 146px; font-size: 13px;">
                                         <div class="DR_Select_Trigger">
-                                            <span class="DR_Select_Text">Default</span>${icons.chevron}
+                                            <span class="DR_Select_Text">5</span>${icons.chevron}
                                         </div>
                                         <div class="DR_Select_Options">
                                             <div class="DR_Select_Option" data-value="default">Default</div>
@@ -2955,7 +2967,7 @@
                                             <div class="DR_Select_Option" data-value="2">2</div>
                                             <div class="DR_Select_Option" data-value="3">3</div>
                                             <div class="DR_Select_Option" data-value="4">4</div>
-                                            <div class="DR_Select_Option" data-value="5">5</div>
+                                            <div class="DR_Select_Option selected" data-value="5">5</div>
                                             <div class="DR_Select_Option" data-value="6">6</div>
                                             <div class="DR_Select_Option" data-value="7">7</div>
                                             <div class="DR_Select_Option" data-value="8">8</div>
@@ -2966,6 +2978,21 @@
                                             <div class="DR_Select_Option" data-value="13">13</div>
                                             <div class="DR_Select_Option" data-value="14">14</div>
                                             <div class="DR_Select_Option" data-value="15">15</div>
+                                            <div class="DR_Select_Option" data-value="16">16</div>
+                                            <div class="DR_Select_Option" data-value="17">17</div>
+                                            <div class="DR_Select_Option" data-value="18">18</div>
+                                            <div class="DR_Select_Option" data-value="19">19</div>
+                                            <div class="DR_Select_Option" data-value="20">20</div>
+                                            <div class="DR_Select_Option" data-value="21">21</div>
+                                            <div class="DR_Select_Option" data-value="22">22</div>
+                                            <div class="DR_Select_Option" data-value="23">23</div>
+                                            <div class="DR_Select_Option" data-value="24">24</div>
+                                            <div class="DR_Select_Option" data-value="25">25</div>
+                                            <div class="DR_Select_Option" data-value="26">26</div>
+                                            <div class="DR_Select_Option" data-value="27">27</div>
+                                            <div class="DR_Select_Option" data-value="28">28</div>
+                                            <div class="DR_Select_Option" data-value="29">29</div>
+                                            <div class="DR_Select_Option" data-value="30">30</div>
                                         </div>
                                     </div>
                                 </div>
@@ -3096,8 +3123,8 @@
                         </div>
                         <div class="DR_Divider" style="margin: 2px 0;"></div>
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-top: 2px; align-self: stretch;">
-                            <p class="DR_T2 DR_NoSel" style="text-align: center; font-size: 11px; line-height: 1.4; opacity: 1; margin: 0;">Created by <span class="DR_Hover_1" id="DR_Credit_Oracle" style="color: rgb(var(--DR-blue)); font-weight: 700; cursor: pointer;">OracleMythix</span> & <span class="DR_Hover_1" id="DR_Credit_Gorou" style="color: rgb(var(--DR-blue)); font-weight: 700; cursor: pointer;">oxGorou</span> under <a href="https://github.com/DuoXPy/DuoRain/blob/main/LICENSE" target="_blank" style="color: rgb(var(--DR-blue)); font-weight: 700; text-decoration: none;" class="DR_Hover_1">MIT license</a></p>
-                            <span class="DR_Hover_1" id="DR_Open_Terms_Btn" style="color: rgb(var(--DR-blue)); font-size: 11px; font-weight: 700; cursor: pointer;">EULA & TOS</span>
+                            <p class="DR_T2 DR_NoSel" style="text-align: center; font-size: 11px; line-height: 1.4; opacity: 1; margin: 0;">Created by <span class="DR_Hover_1" id="DR_Credit_Oracle" style="color: var(--dr-link-color); font-weight: 700; cursor: pointer;">OracleMythix</span> & <span class="DR_Hover_1" id="DR_Credit_Gorou" style="color: var(--dr-link-color); font-weight: 700; cursor: pointer;">oxGorou</span> under <a href="https://github.com/DuoXPy/DuoRain/blob/main/LICENSE" target="_blank" style="color: var(--dr-link-color); font-weight: 700; text-decoration: none;" class="DR_Hover_1">MIT license</a></p>
+                            <span class="DR_Hover_1" id="DR_Open_Terms_Btn" style="color: var(--dr-link-color); font-size: 11px; font-weight: 700; cursor: pointer;">EULA & TOS</span>
                         </div>
                     </div>
                 </div>
@@ -3531,6 +3558,12 @@
   if (localStorage.getItem("dr_ez_quiz") === null) {
     localStorage.setItem("dr_ez_quiz", "false");
   }
+  if (localStorage.getItem("dr_ez_quiz_len") === null) {
+    localStorage.setItem("dr_ez_quiz_len", "5");
+  }
+  if (localStorage.getItem("dr_safe_streak") === null) {
+    localStorage.setItem("dr_safe_streak", "true");
+  }
   if (localStorage.getItem("dr_path_inf") === null) {
     localStorage.setItem("dr_path_inf", "true");
   }
@@ -3715,45 +3748,84 @@
     if (signal && signal.aborted)
       return Promise.resolve({ status: 0, responseText: "" });
 
-    return new Promise((resolve, reject) => {
-      let onAbort = null;
-      const cleanup = () => {
-        if (signal && onAbort) signal.removeEventListener("abort", onAbort);
-      };
-      const settle = (fn, value) => {
-        cleanup();
-        fn(value);
-      };
-      const requestOptions = {
-        method: method,
-        url: url,
-        headers: rawHeaders,
-        data: body,
-        onload: (response) => {
-          settle(resolve, response);
-        },
-        onerror: () => {
-          settle(resolve, { status: 0, responseText: "" });
-        },
-        timeout: 15000,
-        ontimeout: () => {
-          settle(resolve, { status: 0, responseText: "" });
-        },
-      };
-      if (anonymous) {
-        requestOptions.anonymous = true;
-      }
-      const handle = GM_xmlhttpRequest(requestOptions);
-      if (signal) {
-        onAbort = () => {
-          try {
-            if (handle && handle.abort) handle.abort();
-          } catch {}
-          settle(resolve, { status: 0, responseText: "" });
+    const gmRequest = () => {
+      return new Promise((resolve) => {
+        let onAbort = null;
+        const cleanup = () => {
+          if (signal && onAbort) signal.removeEventListener("abort", onAbort);
         };
-        signal.addEventListener("abort", onAbort, { once: true });
+        const settle = (fn, value) => {
+          cleanup();
+          fn(value);
+        };
+        const requestOptions = {
+          method: method,
+          url: url,
+          headers: rawHeaders,
+          data: body,
+          onload: (response) => {
+            settle(resolve, response);
+          },
+          onerror: () => {
+            settle(resolve, { status: 0, responseText: "" });
+          },
+          timeout: 15000,
+          ontimeout: () => {
+            settle(resolve, { status: 0, responseText: "" });
+          },
+        };
+        if (anonymous) {
+          requestOptions.anonymous = true;
+        }
+        const handle = GM_xmlhttpRequest(requestOptions);
+        if (signal) {
+          onAbort = () => {
+            try {
+              if (handle && handle.abort) handle.abort();
+            } catch {}
+            settle(resolve, { status: 0, responseText: "" });
+          };
+          signal.addEventListener("abort", onAbort, { once: true });
+        }
+      });
+    };
+
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      ) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    const useFetch = isMobile || typeof GM_xmlhttpRequest === "undefined";
+
+    if (useFetch) {
+      const safeHeaders = {};
+      for (const key in rawHeaders) {
+        if (!forbiddenHeaders[key.toLowerCase()]) {
+          safeHeaders[key] = rawHeaders[key];
+        }
       }
-    });
+
+      return fetch(url, {
+        method: method,
+        headers: safeHeaders,
+        body: method === "GET" || method === "HEAD" ? undefined : body,
+        credentials: anonymous ? "omit" : "include",
+        mode: "cors",
+        signal: signal || undefined,
+      })
+        .then((res) =>
+          res
+            .text()
+            .then((text) => ({ status: res.status, responseText: text })),
+        )
+        .catch(() => {
+          if (signal && signal.aborted) return { status: 0, responseText: "" };
+          return gmRequest();
+        });
+    }
+
+    return gmRequest();
   }
 
   const farmCtl = { xp: null, gem: null, streak: null, league: null };
@@ -4463,7 +4535,10 @@
         const nameEl = document.getElementById("DR_UName");
         if (nameEl) nameEl.textContent = "Account Manager";
         const avatarEl = document.getElementById("DR_Avatar");
-        if (avatarEl) avatarEl.innerHTML = icons.avatar;
+        if (avatarEl) {
+          avatarEl.innerHTML =
+            '<img src="https://d35aaqx5ub95lt.cloudfront.net/images/super/11db6cd6f69cb2e3c5046b915be8e669.svg" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
+        }
         const statsRow = document.getElementById("DR_User_Stats_Row");
         if (statsRow) statsRow.style.display = "none";
       }
@@ -4863,7 +4938,7 @@
 
       const res = await fetchApi(
         "GET",
-        `${config.api.users}/${userId}?fields=id,username,email,emailVerified,fromLanguage,learningLanguage,streak,totalXp,gems,picture,streakData,timezone`,
+        `${config.api.users}/${userId}?fields=id,username,email,emailVerified,fromLanguage,learningLanguage,streak,totalXp,gems,picture,streakData,timezone,creationDate`,
       );
 
       if (res.status !== 200) {
@@ -4974,33 +5049,35 @@
 
       const text = res.responseText || "";
       const lines = text.split("\n");
-      let html = "";
-      let listItems = [];
-
-      const flushSection = () => {
-        if (listItems.length) {
-          if (html)
-            html += '<div class="DR_Divider" style="margin: 8px 0;"></div>';
-          html += `<ul style="margin: 0; padding-left: 14px; color: var(--dr-text); font-size: 11px; line-height: 1.5; list-style-type: disc; text-align: left; align-self: stretch;">
-            ${listItems.map((item) => `<li class="DR_T2 DR_NoSel" style="margin-bottom: 3px;">${item}</li>`).join("")}
-          </ul>`;
-        }
-        listItems = [];
-      };
+      const items = [];
+      let inTargetSection = false;
 
       for (let line of lines) {
         line = line.trim();
         if (line.startsWith("## ")) {
-          flushSection();
-        } else if (line.startsWith("- ") || line.startsWith("* ")) {
-          listItems.push(line.substring(2).trim());
+          const headingVersion = line
+            .replace(/^##\s*/, "")
+            .replace(/[\[\]]/g, "")
+            .trim();
+          inTargetSection =
+            compareVersions(headingVersion, drScriptVersion) === 0;
+        } else if (
+          inTargetSection &&
+          (line.startsWith("- ") || line.startsWith("* "))
+        ) {
+          items.push(line.substring(2).trim());
         }
       }
-      flushSection();
+
+      const html = items.length
+        ? `<ul style="margin: 0; padding-left: 14px; color: var(--dr-text); font-size: 11px; line-height: 1.5; list-style-type: disc; text-align: left; align-self: stretch;">
+            ${items.map((item) => `<li class="DR_T2 DR_NoSel" style="margin-bottom: 3px;">${item}</li>`).join("")}
+          </ul>`
+        : "";
 
       cont.innerHTML =
         html ||
-        `<p class="DR_T2 DR_NoSel" style="text-align: center;">No updates found.</p>`;
+        `<p class="DR_T2 DR_NoSel" style="text-align: center;">No changelog entries for this version.</p>`;
       cont.dataset.loaded = "1";
       const card = document.getElementById("DR_Changelog_Card");
       if (card) {
@@ -5296,7 +5373,7 @@
     try {
       const res = await fetchApi(
         "GET",
-        `${config.api.users}/${userId}?fields=streak,totalXp,gems,streakData`,
+        `${config.api.users}/${userId}?fields=streak,totalXp,gems,streakData,creationDate`,
       );
       if (res.status === 200) {
         const data = safeJsonParse(res.responseText, {});
@@ -5311,6 +5388,9 @@
         }
         if (data.streakData !== undefined) {
           user.streakData = data.streakData;
+        }
+        if (data.creationDate !== undefined) {
+          user.creationDate = data.creationDate;
         }
         showUser();
       }
@@ -5389,8 +5469,8 @@
       const payload = {
         awardXp: true,
         completedBonusChallenge: true,
-        fromLanguage: "fr",
-        learningLanguage: "en",
+        fromLanguage: "en",
+        learningLanguage: "fr",
         hasXpBoost: false,
         illustrationFormat: "svg",
         isFeaturedStoryInPracticeHub: true,
@@ -5412,7 +5492,10 @@
         null,
         signal,
       );
-      return res.status === 200;
+      if (res.status !== 200) return false;
+
+      const data = safeJsonParse(res.responseText, {});
+      return !!data.awardedXp;
     } catch {
       return false;
     }
@@ -5672,10 +5755,14 @@
         null,
         signal,
       );
-      if (sRes.status !== 200) return false;
+      if (sRes.status !== 200) {
+        return false;
+      }
 
       const sData = safeJsonParse(sRes.responseText, {});
-      if (!sData.id) return false;
+      if (!sData.id) {
+        return false;
+      }
 
       const fPayload = {
         ...sData,
@@ -5695,15 +5782,81 @@
         null,
         signal,
       );
-      return fRes.status === 200;
+      if (fRes.status !== 200) {
+        return false;
+      }
+
+      const fData = safeJsonParse(fRes.responseText, {});
+      if (fData.xpGain === undefined || fData.xpGain === null) {
+        return false;
+      }
+
+      return true;
     } catch {
       return false;
     }
   }
 
   async function farmStreak(targetDays) {
-    const isInfinite = targetDays === Infinity;
+    let isInfinite = targetDays === Infinity;
     stopBtn("DR_Streak_Btn");
+
+    if (localStorage.getItem("dr_safe_streak") === "true" && user) {
+      let creationDateVal = user.creationDate;
+      if (creationDateVal) {
+        const creationDateObj = new Date(
+          typeof creationDateVal === "number"
+            ? creationDateVal * 1000
+            : creationDateVal,
+        );
+        if (!isNaN(creationDateObj.getTime())) {
+          const safeTz = accountTimezone();
+          const creationParts = tzParts(safeTz, creationDateObj);
+          const creationDayMs = Date.UTC(
+            +creationParts.year,
+            +creationParts.month - 1,
+            +creationParts.day,
+          );
+          const todayParts = accountToday(safeTz);
+          const todayDayMs = Date.UTC(
+            todayParts.year,
+            todayParts.month - 1,
+            todayParts.day,
+          );
+          const elapsedDays = Math.round(
+            (todayDayMs - creationDayMs) / 86400000,
+          );
+          const maxSafeStreak = elapsedDays;
+          const currentStreak = user.streak || 0;
+          const remainingSafeDays = Math.max(0, maxSafeStreak - currentStreak);
+
+          if (remainingSafeDays <= 0) {
+            notify(
+              "error",
+              "Safe Streak",
+              "Farming blocked: your streak has already reached the maximum limit of " +
+                maxSafeStreak +
+                " days for your account age.",
+            );
+            farmStates.streak = false;
+            resetBtn("DR_Streak_Btn", "RUN");
+            return;
+          }
+
+          if (isInfinite || targetDays > remainingSafeDays) {
+            notify(
+              "warning",
+              "Safe Streak",
+              "Target days capped at " +
+                remainingSafeDays +
+                " to prevent exceeding account age.",
+            );
+            targetDays = remainingSafeDays;
+            isInfinite = false;
+          }
+        }
+      }
+    }
 
     const tz = accountTimezone();
     let base;
@@ -5774,9 +5927,7 @@
 
   async function keepStreak() {
     if (!user) return false;
-    const tz = accountTimezone();
-    const t = accountToday(tz);
-    const endSecs = wallClockToSeconds(tz, t.year, t.month, t.day, 12, 0, 0);
+    const endSecs = Math.floor(Date.now() / 1000);
     return completePracticeSession(endSecs);
   }
 
@@ -5787,18 +5938,60 @@
     const t = accountToday(tz);
     const pad = (n) => String(n).padStart(2, "0");
     const todayIso = `${t.year}-${pad(t.month)}-${pad(t.day)}`;
-    if (localStorage.getItem("dr_streak_kept_date") === todayIso) return;
-    if (user.streakData?.currentStreak?.endDate === todayIso) {
-      localStorage.setItem("dr_streak_kept_date", todayIso);
+    const keptKey = `dr_streak_kept_date_${userId}`;
+    if (localStorage.getItem(keptKey) === todayIso) return;
+    if (user.streakData?.currentStreak?.lastExtendedDate === todayIso) {
+      localStorage.setItem(keptKey, todayIso);
       return;
     }
+    if (localStorage.getItem("dr_safe_streak") === "true") {
+      let creationDateVal = user.creationDate;
+      if (creationDateVal) {
+        const creationDateObj = new Date(
+          typeof creationDateVal === "number"
+            ? creationDateVal * 1000
+            : creationDateVal,
+        );
+        if (!isNaN(creationDateObj.getTime())) {
+          const creationParts = tzParts(tz, creationDateObj);
+          const creationDayMs = Date.UTC(
+            +creationParts.year,
+            +creationParts.month - 1,
+            +creationParts.day,
+          );
+          const todayDayMs = Date.UTC(t.year, t.month - 1, t.day);
+          const elapsedDays = Math.round(
+            (todayDayMs - creationDayMs) / 86400000,
+          );
+          const maxSafeStreak = elapsedDays;
+          const currentStreak = user.streak || 0;
+          if (currentStreak + 1 > maxSafeStreak) {
+            notify(
+              "warning",
+              "Auto Keep Streak",
+              "Auto streak blocked: keeping streak today would exceed the safe limit (" +
+                maxSafeStreak +
+                " days) for your account age.",
+            );
+            return;
+          }
+        }
+      }
+    }
+
     streakKeepBusy = true;
     try {
       const ok = await keepStreak();
       if (ok) {
-        localStorage.setItem("dr_streak_kept_date", todayIso);
+        localStorage.setItem(keptKey, todayIso);
         refreshStats();
         notify("success", "Auto Keep Streak", "Your streak is safe for today.");
+      } else {
+        notify(
+          "error",
+          "Auto Keep Streak",
+          "Could not save your streak today. Will keep retrying.",
+        );
       }
     } finally {
       streakKeepBusy = false;
@@ -5912,7 +6105,10 @@
 
   async function refreshQuestCenter() {
     if (!token || !userId) return;
-    await getQuests();
+    const state = await fetchQuests(false);
+    if (state && pageId === "Quests") {
+      showQuests();
+    }
     autoQuestSaver();
   }
 
@@ -6264,7 +6460,7 @@
   function startLeaguePolling() {
     silentLeagueCheck();
     if (leaguePollTimer) clearInterval(leaguePollTimer);
-    leaguePollTimer = setInterval(silentLeagueCheck, 15000);
+    leaguePollTimer = setInterval(silentLeagueCheck, 30000);
   }
 
   function stopLeaguePolling() {
@@ -6284,23 +6480,10 @@
     return new Date().toISOString();
   }
 
-  async function getQuests() {
-    const cont = document.getElementById("DR_Quest_Container");
-    if (!cont) {
-      return;
-    }
-
-    const forceBtn = document.getElementById("DR_Quest_Force_Btn");
-
-    if (!token) {
-      cont.innerHTML = `<p class="DR_T2 DR_NoSel" style="text-align: center;">Login required.</p>`;
-      return;
-    }
-
-    const isRefresh = questState !== null;
-    const prevScroll = cont.scrollTop;
-    if (!isRefresh) {
-      cont.innerHTML = `<p class="DR_T2 DR_NoSel" style="text-align: center;">Loading...</p>`;
+  async function fetchQuests(force = false) {
+    if (!token || !userId) return null;
+    if (!force && questState && Date.now() - questStateTs < 15000) {
+      return questState;
     }
 
     try {
@@ -6334,14 +6517,39 @@
         earned: new Set(pData.badges?.earned || []),
       };
       questStateTs = Date.now();
+      return questState;
+    } catch {
+      return null;
+    }
+  }
 
+  async function getQuests(force = false) {
+    const cont = document.getElementById("DR_Quest_Container");
+    if (!cont) {
+      return;
+    }
+
+    const forceBtn = document.getElementById("DR_Quest_Force_Btn");
+
+    if (!token) {
+      cont.innerHTML = `<p class="DR_T2 DR_NoSel" style="text-align: center;">Login required.</p>`;
+      return;
+    }
+
+    const isRefresh = questState !== null;
+    const prevScroll = cont.scrollTop;
+    if (!isRefresh) {
+      cont.innerHTML = `<p class="DR_T2 DR_NoSel" style="text-align: center;">Loading...</p>`;
+    }
+
+    const state = await fetchQuests(force);
+    if (state) {
       showQuests();
       cont.scrollTop = prevScroll;
-
       if (forceBtn) {
         forceBtn.disabled = false;
       }
-    } catch {
+    } else {
       if (!isRefresh)
         cont.innerHTML = `<p class="DR_T2 DR_NoSel" style="text-align: center; color: rgb(var(--DR-red));">Failed to load quests.</p>`;
     }
@@ -6597,7 +6805,7 @@
           : "Some quests could not be completed.",
       );
       clearProgress("DR_QuestForce", allOk);
-      getQuests();
+      getQuests(true);
     } catch {
       notify("error", "Network Error", "Failed mass operation.");
       clearProgress("DR_QuestForce", false);
@@ -8076,6 +8284,14 @@
     );
   }
 
+  function drVpOffsetTop() {
+    return window.visualViewport ? window.visualViewport.offsetTop : 0;
+  }
+
+  function drVpOffsetLeft() {
+    return window.visualViewport ? window.visualViewport.offsetLeft : 0;
+  }
+
   function drMargin() {
     return drVpWidth() <= 480 ? 8 : 16;
   }
@@ -8094,19 +8310,23 @@
   function clampPos(left, top) {
     const wrap = document.getElementById("DR_Main");
     const m = drMargin();
-    const maxL = Math.max(m, drVpWidth() - wrap.offsetWidth - m);
-    const maxT = Math.max(m, drVpHeight() - wrap.offsetHeight - m);
+    const offTop = drVpOffsetTop();
+    const offLeft = drVpOffsetLeft();
+    const minL = m + offLeft;
+    const minT = m + offTop;
+    const maxL = Math.max(minL, offLeft + drVpWidth() - wrap.offsetWidth - m);
+    const maxT = Math.max(minT, offTop + drVpHeight() - wrap.offsetHeight - m);
     return {
-      left: Math.min(Math.max(left, m), maxL),
-      top: Math.min(Math.max(top, m), maxT),
+      left: Math.min(Math.max(left, minL), maxL),
+      top: Math.min(Math.max(top, minT), maxT),
     };
   }
 
   function nearestCorner() {
     const wrap = document.getElementById("DR_Main");
     const r = wrap.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
+    const cx = r.left + r.width / 2 - drVpOffsetLeft();
+    const cy = r.top + r.height / 2 - drVpOffsetTop();
     return (
       (cy < drVpHeight() / 2 ? "t" : "b") + (cx < drVpWidth() / 2 ? "l" : "r")
     );
@@ -8118,9 +8338,11 @@
     const m = drMargin();
     const top = panelCorner.charAt(0) === "t";
     const left = panelCorner.charAt(1) === "l";
-    wrap.style.left = left ? m + "px" : "auto";
+    const offTop = drVpOffsetTop();
+    const offLeft = drVpOffsetLeft();
+    wrap.style.left = left ? m + offLeft + "px" : "auto";
     wrap.style.right = left ? "auto" : m + "px";
-    wrap.style.top = top ? m + "px" : "auto";
+    wrap.style.top = top ? m + offTop + "px" : "auto";
     wrap.style.bottom = top ? "auto" : m + "px";
     wrap.style.flexDirection = top ? "column" : "column-reverse";
     wrap.style.alignItems = left ? "flex-start" : "flex-end";
@@ -8148,13 +8370,18 @@
       const needScroll = natural > cap + 4;
       if (box.classList.contains("dr-scroll") !== needScroll)
         box.classList.toggle("dr-scroll", needScroll);
-      if (needScroll && box.scrollTop !== prevScroll)
+      if (
+        needScroll &&
+        box.scrollTop !== prevScroll &&
+        Date.now() > suppressScrollRestoreUntil
+      )
         box.scrollTop = prevScroll;
     }
     positionPanel();
   }
 
   let relayoutQueued = false;
+  let suppressScrollRestoreUntil = 0;
   function queueRelayout() {
     if (relayoutQueued) return;
     relayoutQueued = true;
@@ -8164,15 +8391,25 @@
     });
   }
 
+  let lastXpHistoryTime = 0;
+  let lastFeedTime = 0;
+
   function refreshPageData(tPageId) {
+    const now = Date.now();
     if (tPageId === "XPSummaries") {
-      loadXpHistory();
+      if (now - lastXpHistoryTime >= 30000) {
+        lastXpHistoryTime = now;
+        loadXpHistory();
+      }
     }
     if (tPageId === "Stats") {
       loadChangelog();
     }
     if (tPageId === "Feed") {
-      getFeed();
+      if (now - lastFeedTime >= 30000) {
+        lastFeedTime = now;
+        getFeed();
+      }
     }
     if (tPageId === "Board") {
       showLeagueBoard();
@@ -8343,7 +8580,7 @@
     if (tPageId === "Settings") {
       const qSel = document.getElementById("DR_EZQuizLength_Select");
       if (qSel) {
-        const storedLen = localStorage.getItem("dr_ez_quiz_len") || "default";
+        const storedLen = localStorage.getItem("dr_ez_quiz_len") || "5";
         const qTxt = qSel.querySelector(".DR_Select_Text");
         if (qTxt) {
           qTxt.innerText = storedLen === "default" ? "Default" : storedLen;
@@ -8411,7 +8648,7 @@
 
       mainBox.style.width = sW + "px";
       mainBox.style.height = sH + "px";
-      void mainBox.offsetHeight; // force reflow
+      void mainBox.offsetHeight;
 
       const easeCurve = "cubic-bezier(0.34, 1.15, 0.64, 1)";
       mainBox.style.transition = `height 0.4s ${easeCurve}, width 0.4s ${easeCurve}`;
@@ -8533,9 +8770,7 @@
     startExecution();
   }
 
-  // ==========================================
-  // AUTO SOLVER CODE PORTED FROM DUOLINGO PRO OFC WHAT DO YALL THINGKING?
-  // ==========================================
+  // AUTO SOLVER CODE PORTED FROM DUOLINGO PRO OFC WHAT DO YALL THINKING?
 
   function toggleAutoSolve(value) {
     if (value === "start") {
@@ -8699,7 +8934,7 @@
   function applyEZQuiz() {
     if (localStorage.getItem("dr_ez_quiz") !== "true") return;
     if (document.getElementById("DR_EZQuiz_Script")) return;
-    const storedLen = localStorage.getItem("dr_ez_quiz_len") || "default";
+    const storedLen = localStorage.getItem("dr_ez_quiz_len") || "5";
     const script = document.createElement("script");
     script.id = "DR_EZQuiz_Script";
     script.textContent = `
@@ -10048,17 +10283,19 @@
       if (!user) return;
       await refreshStats();
       autoKeepStreak();
+      autoReachRank();
+      autoBlockLeague();
     }, 30000);
 
     setInterval(() => {
       if (!user) return;
       refreshQuestCenter();
-    }, 60000);
+    }, 30000);
 
     setInterval(() => {
       if (!user) return;
       refreshPageData(pageId);
-    }, 10000);
+    }, 30000);
 
     ["XP", "Gem", "Streak", "Path", "Practice"].forEach(toggleInf);
 
@@ -10295,6 +10532,7 @@
       notify("info", "On-Client Max", "Reloading page to apply the change...");
       setTimeout(() => window.location.reload(), 1200);
     });
+    wireToggle("DR_SafeStreak_Toggle", "dr_safe_streak", () => {});
     wireToggle("DR_AutoJoin_Toggle", "dr_auto_join_league", () => {
       leagueJoinAttempted = false;
     });
@@ -10585,6 +10823,7 @@
     window.addEventListener("orientationchange", queueRelayout);
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", queueRelayout);
+      window.visualViewport.addEventListener("scroll", queueRelayout);
     }
     relayout();
 
@@ -10714,7 +10953,7 @@
 
     const qSel = document.getElementById("DR_EZQuizLength_Select");
     if (qSel) {
-      const storedLen = localStorage.getItem("dr_ez_quiz_len") || "default";
+      const storedLen = localStorage.getItem("dr_ez_quiz_len") || "5";
       qSel.setAttribute("data-value", storedLen);
       qSel.querySelector(".DR_Select_Text").innerText =
         storedLen === "default" ? "Default" : storedLen;
@@ -10735,7 +10974,7 @@
     });
 
     document.getElementById("DR_GitHub_Btn").addEventListener("click", () => {
-      window.open("https://github.com/DuoXPy/DuoRain", "_blank");
+      window.open("https://github.com/OracleMythix/DuoRain-BETA", "_blank");
     });
 
     document
@@ -10897,9 +11136,15 @@
             e.target &&
             (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
           ) {
+            const target = e.target;
+            suppressScrollRestoreUntil = Date.now() + 600;
             setTimeout(() => {
-              e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+              target.scrollIntoView({ behavior: "smooth", block: "center" });
             }, 150);
+            setTimeout(() => {
+              suppressScrollRestoreUntil = Date.now() + 300;
+              target.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 450);
           }
         },
         true,
