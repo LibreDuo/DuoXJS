@@ -11401,14 +11401,15 @@
             (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
           ) {
             const target = e.target;
-            suppressScrollRestoreUntil = Date.now() + 600;
+            suppressScrollRestoreUntil = Date.now() + 1200;
             setTimeout(() => {
+              suppressScrollRestoreUntil = Date.now() + 900;
               target.scrollIntoView({ behavior: "smooth", block: "center" });
             }, 150);
             setTimeout(() => {
-              suppressScrollRestoreUntil = Date.now() + 300;
+              suppressScrollRestoreUntil = Date.now() + 600;
               target.scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 450);
+            }, 700);
           }
         },
         true,
