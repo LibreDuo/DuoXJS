@@ -5961,7 +5961,7 @@
           const elapsedDays = Math.round(
             (todayDayMs - creationDayMs) / 86400000,
           );
-          const maxSafeStreak = elapsedDays;
+          const maxSafeStreak = elapsedDays - 1;
           const currentStreak = user.streak || 0;
           const remainingSafeDays = Math.max(0, maxSafeStreak - currentStreak);
 
@@ -6100,7 +6100,7 @@
           const elapsedDays = Math.round(
             (todayDayMs - creationDayMs) / 86400000,
           );
-          const maxSafeStreak = elapsedDays;
+          const maxSafeStreak = elapsedDays - 1;
           const currentStreak = user.streak || 0;
           if (currentStreak + 1 > maxSafeStreak) {
             notify(
