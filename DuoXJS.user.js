@@ -3209,38 +3209,40 @@
                             <p class="DX_T2 DX_NoSel">Your session metrics and credits</p>
                         </div>
                     </div>
-                    <div class="DX_Panel_Card" id="DX_Changelog_Card" style="margin-bottom: 8px; display: none;">
-                        <p class="DX_T1 DX_NoSel" style="font-weight: 800; margin-bottom: 6px;">Changelog</p>
-                        <div id="DX_Changelog" class="DX_Scroll_Inner" style="max-height: 300px; width: 100%;">
-                            <p class="DX_T2 DX_NoSel" style="text-align: center;">Loading changelog...</p>
+                    <div class="DX_Scroll_Inner" style="max-height: 300px; width: 100%;">
+                        <div class="DX_Panel_Card" id="DX_Changelog_Card" style="margin-bottom: 8px; display: none;">
+                            <p class="DX_T1 DX_NoSel" style="font-weight: 800; margin-bottom: 6px;">Changelog</p>
+                            <div id="DX_Changelog" style="width: 100%;">
+                                <p class="DX_T2 DX_NoSel" style="text-align: center;">Loading changelog...</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="DX_Panel_Card">
-                        <div class="DX_HStack_Auto" style="align-self: stretch;">
-                            <p class="DX_T1 DX_NoSel" style="font-weight: 800;">v${dxVersion} Stats</p>
-                            <span class="DX_T2 DX_NoSel" id="DX_Stats_Reset" style="font-size: 11px; cursor: pointer; opacity: 0.6;">Reset</span>
-                        </div>
-                        <div class="DX_HStack_Auto" style="align-self: stretch;">
-                            <p class="DX_T2 DX_NoSel">XP Gained</p>
-                            <p class="DX_T1 DX_NoSel" id="DX_Stat_XP">0</p>
-                        </div>
-                        <div class="DX_HStack_Auto" style="align-self: stretch;">
-                            <p class="DX_T2 DX_NoSel">Gems Gained</p>
-                            <p class="DX_T1 DX_NoSel" id="DX_Stat_Gems">0</p>
-                        </div>
-                        <div class="DX_HStack_Auto" style="align-self: stretch;">
-                            <p class="DX_T2 DX_NoSel">Streak Gained</p>
-                            <p class="DX_T1 DX_NoSel" id="DX_Stat_Streak">0</p>
-                        </div>
-                        <div class="DX_Divider" style="margin: 2px 0;"></div>
-                        <div class="DX_HStack_Auto" style="align-self: stretch;">
-                            <p class="DX_T2 DX_NoSel">Since</p>
-                            <p class="DX_T2 DX_NoSel" id="DX_Stat_Since" style="opacity: 1;">—</p>
-                        </div>
-                        <div class="DX_Divider" style="margin: 2px 0;"></div>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-top: 2px; align-self: stretch;">
-                            <p class="DX_T2 DX_NoSel" style="text-align: center; font-size: 11px; line-height: 1.4; opacity: 1; margin: 0;">Created by <span class="DX_Hover_1" id="DX_Credit_LibreDuo" style="color: var(--dx-link-color); font-weight: 700; cursor: pointer;">LibreDuo</span> under <a href="https://github.com/LibreDuo/DuoXJS/blob/main/LICENSE" target="_blank" style="color: var(--dx-link-color); font-weight: 700; text-decoration: none;" class="DX_Hover_1">MIT license</a></p>
-                            <span class="DX_Hover_1" id="DX_Open_Terms_Btn" style="color: var(--dx-link-color); font-size: 11px; font-weight: 700; cursor: pointer;">EULA & TOS</span>
+                        <div class="DX_Panel_Card">
+                            <div class="DX_HStack_Auto" style="align-self: stretch;">
+                                <p class="DX_T1 DX_NoSel" style="font-weight: 800;">v${dxVersion} Stats</p>
+                                <span class="DX_T2 DX_NoSel" id="DX_Stats_Reset" style="font-size: 11px; cursor: pointer; opacity: 0.6;">Reset</span>
+                            </div>
+                            <div class="DX_HStack_Auto" style="align-self: stretch;">
+                                <p class="DX_T2 DX_NoSel">XP Gained</p>
+                                <p class="DX_T1 DX_NoSel" id="DX_Stat_XP">0</p>
+                            </div>
+                            <div class="DX_HStack_Auto" style="align-self: stretch;">
+                                <p class="DX_T2 DX_NoSel">Gems Gained</p>
+                                <p class="DX_T1 DX_NoSel" id="DX_Stat_Gems">0</p>
+                            </div>
+                            <div class="DX_HStack_Auto" style="align-self: stretch;">
+                                <p class="DX_T2 DX_NoSel">Streak Gained</p>
+                                <p class="DX_T1 DX_NoSel" id="DX_Stat_Streak">0</p>
+                            </div>
+                            <div class="DX_Divider" style="margin: 2px 0;"></div>
+                            <div class="DX_HStack_Auto" style="align-self: stretch;">
+                                <p class="DX_T2 DX_NoSel">Since</p>
+                                <p class="DX_T2 DX_NoSel" id="DX_Stat_Since" style="opacity: 1;">—</p>
+                            </div>
+                            <div class="DX_Divider" style="margin: 2px 0;"></div>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; margin-top: 2px; align-self: stretch;">
+                                <p class="DX_T2 DX_NoSel" style="text-align: center; font-size: 11px; line-height: 1.4; opacity: 1; margin: 0;">Created by <span class="DX_Hover_1" id="DX_Credit_LibreDuo" style="color: var(--dx-link-color); font-weight: 700; cursor: pointer;">LibreDuo</span> under <a href="https://github.com/LibreDuo/DuoXJS/blob/main/LICENSE" target="_blank" style="color: var(--dx-link-color); font-weight: 700; text-decoration: none;" class="DX_Hover_1">MIT license</a></p>
+                                <span class="DX_Hover_1" id="DX_Open_Terms_Btn" style="color: var(--dx-link-color); font-size: 11px; font-weight: 700; cursor: pointer;">EULA & TOS</span>
+                            </div>
                         </div>
                     </div>
                 </div>
