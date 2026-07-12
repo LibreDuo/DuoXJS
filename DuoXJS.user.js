@@ -6305,7 +6305,7 @@
         try {
           const res = await fetchApi(
             "GET",
-            `${config.api.leaderboards}/users/${userId}?client_unlocked=true&_=${Date.now()}`,
+            `${config.api.leaderboards}/users/${userId}?client_unlocked=true&get_reactions=true&_=${Date.now()}`,
             null,
             null,
             sig,
