@@ -1619,11 +1619,17 @@
             border-radius: 3px;
             background: rgba(var(--DX-blue), 0.1);
             overflow: hidden;
-            transition: height var(--DX-motion-page) var(--DX-ease);
+            opacity: 0;
+            visibility: hidden;
+            transition: height var(--DX-motion-page) var(--DX-ease),
+                        opacity var(--DX-motion-page) var(--DX-ease),
+                        visibility var(--DX-motion-page) var(--DX-ease);
         }
 
         .DX_Prog_Wrap.on {
             height: 4px;
+            opacity: 1;
+            visibility: visible;
         }
 
         .DX_Prog_Fill {
@@ -5796,7 +5802,6 @@
       farmStates.xp = false;
       farmCtl.xp = null;
       resetBtn("DX_XP_Btn", "RUN");
-      leagueDataTs = 0;
     }
   }
 
@@ -6537,7 +6542,6 @@
       farmStates.league = false;
       farmCtl.league = null;
       resetBtn("DX_League_Btn", "RUN");
-      leagueDataTs = 0;
     }
   }
 
