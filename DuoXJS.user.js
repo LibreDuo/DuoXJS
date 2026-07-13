@@ -2679,11 +2679,11 @@
             <div class="DX_Main_Box dx-light" id="DX_Main_Box">
                 <div class="DX_Modal_Overlay" id="DX_Confirm_Modal">
                     <div class="DX_Modal_Box">
-                        <div class="DX_Notif_Ico" style="color: rgb(243, 156, 18); width: 32px; height: 32px; margin-bottom: 4px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <div class="DX_Notif_Ico" style="width: 32px; height: 32px; margin-bottom: 4px;">
+                            ${icons.warning}
                         </div>
                         <p class="DX_T1 DX_NoSel">Action Required</p>
-                        <p class="DX_T2 DX_NoSel" style="font-size: 12px; margin-bottom: 6px;">XP Farm is currently running. Do you want to stop it to run Auto League?</p>
+                        <p class="DX_T2 DX_NoSel" id="DX_Confirm_Modal_Text" style="font-size: 12px; margin-bottom: 6px;">XP Farm is currently running. Do you want to stop it to run Auto League?</p>
                         <div class="DX_HStack_8" style="margin-top: 4px;">
                             <button class="DX_Sm_Btn DX_Btn_Eel DX_NoSel" id="DX_Modal_Cancel" style="flex: 1; outline-color: transparent;">
                                 <span class="DX_Sm_Btn_Label" style="color: var(--dx-text);">CANCEL</span>
@@ -3006,7 +3006,7 @@
                             <div class="DX_Setting_Row">
                                 <div class="DX_Row_Text">
                                     <p class="DX_T1 DX_NoSel">XP Overshoot</p>
-                                    <p class="DX_T2 DX_NoSel">Extra XP buffer (30–500 XP, 0 to disable)</p>
+                                    <p class="DX_T2 DX_NoSel">Extra XP buffer for Auto League (0 to disable)</p>
                                 </div>
                                 <div class="DX_HStack_8" style="width: auto;">
                                     <div class="DX_Set_Input_Wrap" style="width: 116px;">
@@ -3058,6 +3058,7 @@
                                 </div>
                             </div>
                             <div class="DX_Divider"></div>
+
                             <div class="DX_Setting_Row">
                                 <div class="DX_Row_Text">
                                     <p class="DX_T1 DX_NoSel">EZ Quiz</p>
@@ -3604,6 +3605,16 @@
                             <div class="DX_Divider"></div>
                             <div class="DX_Setting_Row">
                                 <div class="DX_Row_Text">
+                                    <p class="DX_T1 DX_NoSel">Safe Solver Mode</p>
+                                    <p class="DX_T2 DX_NoSel">Mimic human typing speed and delays in lessons</p>
+                                </div>
+                                <div class="DX_HStack_8" style="width: auto;">
+                                    <div class="DX_Toggle" id="DX_SafeSolver_Toggle"><div class="DX_Toggle_Knob"></div></div>
+                                </div>
+                            </div>
+                            <div class="DX_Divider"></div>
+                            <div class="DX_Setting_Row">
+                                <div class="DX_Row_Text">
                                     <p class="DX_T1 DX_NoSel">Random Speed</p>
                                     <p class="DX_T2 DX_NoSel">Wait a random delay before solving</p>
                                 </div>
@@ -3682,6 +3693,9 @@
   if (localStorage.getItem("dx_safe_streak") === null) {
     localStorage.setItem("dx_safe_streak", "true");
   }
+  if (localStorage.getItem("dx_safe_solver") === null) {
+    localStorage.setItem("dx_safe_solver", "false");
+  }
   if (localStorage.getItem("dx_path_inf") === null) {
     localStorage.setItem("dx_path_inf", "true");
   }
@@ -3707,6 +3721,7 @@
   let lastHomeTime = 0;
 
   let isAutoMode = false;
+  let solverPausedByUser = false;
   let headers = null;
   let user = null;
   let farmStates = {
@@ -4738,6 +4753,7 @@
         window.location.pathname.includes("/stories");
       if (!isLessonActive) {
         hasDecrementedForCurrentLesson = false;
+        solverPausedByUser = false;
       }
 
       const isSectionPage =
@@ -5654,88 +5670,118 @@
         null,
         signal,
       );
-      if (res.status !== 200) return false;
+      if (res.status !== 200) return 0;
 
       const data = safeJsonParse(res.responseText, {});
-      return !!data.awardedXp;
+      return typeof data.awardedXp === "number" ? data.awardedXp : 0;
     } catch {
-      return false;
+      return 0;
     }
   }
 
   async function farmXp(targetAmount) {
     const isInfinite = targetAmount === Infinity;
-    if (!isInfinite) {
-      const room = parseInt(localStorage.getItem("dx_xp_room")) || 0;
-      if (room > 0) {
-        targetAmount += Math.min(500, Math.max(30, room));
-      }
-    }
     const maxPerReq = 499;
     const minPerReq = 30;
 
-    let loops = isInfinite ? Infinity : Math.floor(targetAmount / maxPerReq);
-    let remAmount = isInfinite ? 0 : targetAmount % maxPerReq;
-
-    if (!isInfinite && remAmount > 0 && remAmount < minPerReq && loops > 0) {
-      loops--;
-      remAmount += maxPerReq;
-    }
-
-    const expectedIters = isInfinite
-      ? Infinity
-      : loops + (remAmount >= minPerReq ? 1 : 0);
-    let doneIters = 0;
     let totalXp = 0;
+    let consecutiveFailures = 0;
+    const xpBefore = user ? user.totalXp : 0;
     const sig = farmSignal("xp");
 
     stopBtn("DX_XP_Btn");
 
     try {
-      for (let i = 0; i < loops; i++) {
-        if (!farmStates.xp) {
+      outerLoop: while (farmStates.xp) {
+        while (farmStates.xp) {
+          if (!isInfinite && totalXp >= targetAmount) break;
+
+          const remainingNeeded = isInfinite
+            ? Infinity
+            : targetAmount - totalXp;
+
+          if (!isInfinite && remainingNeeded < minPerReq) break;
+
+          let nextAmount;
+          if (isInfinite || remainingNeeded >= maxPerReq) {
+            nextAmount = maxPerReq;
+            if (!isInfinite) {
+              const r = remainingNeeded % maxPerReq;
+              if (r > 0 && r < minPerReq) {
+                nextAmount = maxPerReq - (minPerReq - r);
+              }
+            }
+          } else {
+            nextAmount = remainingNeeded;
+          }
+          if (nextAmount < minPerReq) nextAmount = minPerReq;
+
+          const bonus = Math.max(0, nextAmount - 30);
+          const awarded = await playStory(bonus, sig);
+          if (!farmStates.xp) break outerLoop;
+
+          if (awarded > 0) {
+            consecutiveFailures = 0;
+            totalXp += awarded;
+            if (user) {
+              user.totalXp += awarded;
+              showUser();
+            }
+            if (!isInfinite && totalXp >= targetAmount) break;
+          } else {
+            consecutiveFailures++;
+            if (consecutiveFailures >= 5) {
+              notify(
+                "error",
+                "XP Farm Rate-Limited",
+                "Duolingo returned multiple failed responses. Stopping farm to prevent account suspension.",
+              );
+              break outerLoop;
+            }
+            await waitStop(2000, sig);
+            continue;
+          }
+
+          if (!isInfinite) {
+            setProgress("DX_XP", Math.min(100, (totalXp / targetAmount) * 100));
+          }
+
+          await waitStop(delayMs, sig);
+        }
+
+        if (!farmStates.xp) break;
+
+        if (isInfinite) break;
+
+        await refreshStats(true);
+        const serverConfirmed = user
+          ? Math.max(0, user.totalXp - xpBefore)
+          : totalXp;
+
+        if (serverConfirmed >= targetAmount) {
+          totalXp = serverConfirmed;
           break;
         }
 
-        const success = await playStory(469, sig);
         if (!farmStates.xp) break;
-        if (success) {
-          totalXp += maxPerReq;
-          doneIters++;
-          user.totalXp += maxPerReq;
-          showUser();
-        }
 
-        if (!isInfinite) {
-          setProgress("DX_XP", (doneIters / expectedIters) * 100);
-        }
+        const gap = targetAmount - serverConfirmed;
+        totalXp = serverConfirmed;
+        if (user) user.totalXp = xpBefore + serverConfirmed;
 
-        await waitStop(delayMs, sig);
-      }
+        if (gap < minPerReq) break;
 
-      if (!isInfinite && remAmount >= minPerReq && farmStates.xp) {
-        const success = await playStory(
-          Math.min(remAmount - minPerReq, 469),
-          sig,
-        );
-        if (success) {
-          totalXp += remAmount;
-          doneIters++;
-          user.totalXp += remAmount;
-          showUser();
-        }
-        setProgress("DX_XP", 100);
       }
 
       const completed = farmStates.xp;
-      if (totalXp > 0) {
-        addStat("xp", totalXp);
+      const finalGained = user ? Math.max(0, user.totalXp - xpBefore) : totalXp;
+      if (finalGained > 0) {
+        addStat("xp", finalGained);
         notify(
           "success",
           completed ? "XP Farm Complete" : "XP Farm Stopped",
-          `Farmed ${totalXp} XP.`,
+          `Farmed ${finalGained} XP.`,
         );
-        refreshStats(true);
       }
 
       clearProgress("DX_XP", completed);
@@ -5757,7 +5803,7 @@
       );
 
       if (res.status !== 200) {
-        return [];
+        return null;
       }
 
       const data = safeJsonParse(res.responseText, {});
@@ -5777,7 +5823,7 @@
 
       return collected;
     } catch {
-      return [];
+      return null;
     }
   }
 
@@ -5807,12 +5853,29 @@
 
     let totalGained = 0;
     let doneLoops = 0;
+    let consecutiveFailures = 0;
     const sig = farmSignal("gem");
 
     try {
       while (farmStates.gem && (isInfinite || doneLoops < targetLoops)) {
         let available = await checkGems(sig);
         if (!farmStates.gem) break;
+
+        if (available === null) {
+          consecutiveFailures++;
+          if (consecutiveFailures >= 5) {
+            notify(
+              "error",
+              "Gem Farm Rate-Limited",
+              "Duolingo returned multiple failed responses. Stopping loop.",
+            );
+            break;
+          }
+          await waitStop(3000, sig);
+          continue;
+        }
+
+        consecutiveFailures = 0;
 
         if (available.length === 0) {
           await waitStop(delayMs * 2, sig);
@@ -6005,6 +6068,7 @@
 
     let doneLoops = 0;
     let savedDays = 0;
+    let consecutiveFailures = 0;
     const sig = farmSignal("streak");
 
     try {
@@ -6022,9 +6086,22 @@
         if (farmStates.streak) {
           const ok = await completePracticeSession(endSecs, sig);
           if (ok && user) {
+            consecutiveFailures = 0;
             savedDays++;
             user.streak++;
             showUser();
+          } else {
+            consecutiveFailures++;
+            if (consecutiveFailures >= 5) {
+              notify(
+                "error",
+                "Streak Farm Rate-Limited",
+                "Duolingo returned multiple failed responses. Stopping streak farm.",
+              );
+              break;
+            }
+            await waitStop(2000, sig);
+            continue;
           }
         }
 
@@ -6277,9 +6354,9 @@
     }
 
     try {
-      const ok = await playStory(0);
-      if (ok && user) {
-        user.totalXp += 30;
+      const xpAwarded = await playStory(0);
+      if (xpAwarded > 0 && user) {
+        user.totalXp += xpAwarded;
         showUser();
       }
     } catch {}
@@ -6300,28 +6377,31 @@
     setProgress("DX_League", 10);
 
     let joinAttemptCount = 0;
+    let consecutiveFailures = 0;
     const sig = farmSignal("league");
 
     try {
       while (farmStates.league) {
         try {
-          const res = await fetchApi(
-            "GET",
-            `${config.api.leaderboards}/users/${userId}?client_unlocked=true&get_reactions=true&_=${Date.now()}`,
-            null,
-            null,
-            sig,
-          );
+          const data = await fetchLeagueData(false, sig);
           if (!farmStates.league) break;
 
-          if (res.status !== 200) {
+          if (!data) {
+            consecutiveFailures++;
+            if (consecutiveFailures >= 5) {
+              notify(
+                "error",
+                "Auto League Rate-Limited",
+                "Failed to retrieve league data multiple times. Stopping loop.",
+              );
+              break;
+            }
             await waitStop(3000, sig);
             continue;
           }
 
-          const data = safeJsonParse(res.responseText, {});
-          leagueDataCache = data;
-          leagueDataTs = Date.now();
+          consecutiveFailures = 0;
+
           applyLeagueSummary(data);
           const activeRanks = data?.active?.cohort?.rankings || [];
           const cRankings = activeRanks.find((u) => u.user_id == userId);
@@ -6340,9 +6420,9 @@
             } else if (joinAttemptCount < 10) {
               joinAttemptCount++;
               try {
-                const ok = await playStory(0, sig);
-                if (ok && user) {
-                  user.totalXp += 30;
+                const xpAwarded = await playStory(0, sig);
+                if (xpAwarded > 0 && user) {
+                  user.totalXp += xpAwarded;
                   showUser();
                 }
               } catch {}
@@ -6361,11 +6441,28 @@
           const tUserRanking = activeRanks[targetRank - 1];
 
           if (!tUserRanking || cRankPos <= targetRank) {
-            if (farmStates.league) {
-              notify("success", "Goal Reached", `Reached Rank #${targetRank}!`);
+            const verified = await fetchLeagueData(true, sig);
+            if (!farmStates.league) break;
+            const verifiedRanks = verified?.active?.cohort?.rankings || [];
+            const verifiedMe = verifiedRanks.find((u) => u.user_id == userId);
+            const verifiedPos = verifiedMe
+              ? verifiedRanks.indexOf(verifiedMe) + 1
+              : null;
+            const verifiedTarget = verifiedRanks[targetRank - 1];
+
+            if (!verifiedTarget || (verifiedPos && verifiedPos <= targetRank)) {
+              if (farmStates.league) {
+                notify(
+                  "success",
+                  "Goal Reached",
+                  `Reached Rank #${targetRank}!`,
+                );
+              }
+              setProgress("DX_League", 100);
+              break;
             }
-            setProgress("DX_League", 100);
-            break;
+            applyLeagueSummary(verified);
+            continue;
           }
 
           const scoreGap = tUserRanking.score - cRankings.score;
@@ -6376,16 +6473,37 @@
 
           setProgress("DX_League", progressPct);
 
-          const room = parseInt(localStorage.getItem("dx_xp_room")) || 0;
-          const overshoot = room > 0 ? Math.min(500, Math.max(30, room)) : 5;
+          const room =
+            localStorage.getItem("dx_xp_room") === null
+              ? 30
+              : parseInt(localStorage.getItem("dx_xp_room")) >= 0
+                ? parseInt(localStorage.getItem("dx_xp_room"))
+                : 0;
+          const overshoot = room > 0 ? room : 1;
+          const targetGap = scoreGap + overshoot;
 
-          if (scoreGap + overshoot > 0) {
-            const bonus = Math.min(469, Math.max(0, scoreGap - 30 + overshoot));
-            const ok = await playStory(bonus, sig);
+          if (targetGap > 0) {
+            let nextAmount = Math.min(499, targetGap);
+            if (targetGap > 499 && targetGap - 499 < 30) {
+              nextAmount = targetGap - 30;
+            }
+            if (nextAmount < 30) {
+              nextAmount = 30;
+            }
+            const bonus = Math.max(0, nextAmount - 30);
+            const xpAwarded = await playStory(bonus, sig);
             if (!farmStates.league) break;
-            if (ok) {
-              user.totalXp += 30 + bonus;
+            if (xpAwarded > 0) {
+              user.totalXp += xpAwarded;
               showUser();
+              if (leagueDataCache) {
+                const ranks = leagueDataCache.active?.cohort?.rankings || [];
+                const me = ranks.find((u) => u.user_id == userId);
+                if (me) {
+                  me.score += xpAwarded;
+                  ranks.sort((a, b) => b.score - a.score);
+                }
+              }
             } else {
               await waitStop(2000, sig);
             }
@@ -6411,10 +6529,15 @@
     }
   }
 
-  function showConfirmModal(onConfirm) {
+  function showConfirmModal(text, onConfirm) {
     const modal = document.getElementById("DX_Confirm_Modal");
     const btnCancel = document.getElementById("DX_Modal_Cancel");
     const btnConfirm = document.getElementById("DX_Modal_Confirm");
+    const textEl = document.getElementById("DX_Confirm_Modal_Text");
+
+    if (textEl && text) {
+      textEl.innerText = text;
+    }
 
     const cleanup = () => {
       modal.classList.remove("show");
@@ -6441,7 +6564,7 @@
   let leagueDataTs = 0;
   const LEAGUE_TTL = 30000;
 
-  async function fetchLeagueData(force) {
+  async function fetchLeagueData(force, sig) {
     if (!userId || !token) return null;
     if (!force && leagueDataCache && Date.now() - leagueDataTs < LEAGUE_TTL) {
       return leagueDataCache;
@@ -6450,6 +6573,9 @@
       const res = await fetchApi(
         "GET",
         `${config.api.leaderboards}/users/${userId}?client_unlocked=true&get_reactions=true&_=${Date.now()}`,
+        null,
+        null,
+        sig,
       );
       if (res.status === 200) {
         const parsed = safeJsonParse(res.responseText);
@@ -6549,9 +6675,9 @@
           let checkAttempts = 0;
           while (checkAttempts < 10) {
             try {
-              const ok = await playStory(0);
-              if (ok && user) {
-                user.totalXp += 30;
+              const xpAwarded = await playStory(0);
+              if (xpAwarded > 0 && user) {
+                user.totalXp += xpAwarded;
                 showUser();
               }
             } catch {}
@@ -8618,7 +8744,9 @@
       activePage.style.transition = "none";
       activePage.style.filter = "blur(6px)";
       activePage.style.opacity = "0";
-      activePage.style.transform = "scale(1.04)";
+      activePage.style.transform = "scale(0.96)";
+      activePage.style.width = sW - 32 + "px";
+      activePage.style.minWidth = sW - 32 + "px";
 
       mainBox.style.height = "auto";
       mainBox.style.maxHeight = "none";
@@ -8652,6 +8780,8 @@
         activePage.style.filter = "";
         activePage.style.opacity = "";
         activePage.style.transform = "";
+        activePage.style.width = "";
+        activePage.style.minWidth = "";
         mainBox.dataset.isAnimating = "false";
         relayout();
       }, 400);
@@ -8747,6 +8877,12 @@
       mBox.style.height = targetH + "px";
       mBox.style.padding = "16px";
 
+      const activeP = mBox.querySelector(".DX_Page.active");
+      if (activeP) {
+        activeP.style.width = targetW - 32 + "px";
+        activeP.style.minWidth = targetW - 32 + "px";
+      }
+
       hideShowContentTimer = setTimeout(() => {
         mBox.style.transition = `opacity 0.3s ${fadeCurve}, filter 0.3s ${fadeCurve}, transform 0.3s ${easeCurve}, height 0.4s ${easeCurve}, width 0.4s ${easeCurve}, padding 0.4s ${easeCurve}`;
         mBox.style.opacity = "1";
@@ -8762,6 +8898,10 @@
         mBox.style.height = "";
         mBox.style.width = "";
         mBox.style.padding = "";
+        if (activeP) {
+          activeP.style.width = "";
+          activeP.style.minWidth = "";
+        }
         mBox.dataset.isAnimating = "false";
         relayout();
       }, 400);
@@ -8840,7 +8980,7 @@
       tPage.style.transition = "none";
       tPage.style.filter = "blur(6px)";
       tPage.style.opacity = "0";
-      tPage.style.transform = "scale(1.04)";
+      tPage.style.transform = "scale(0.96)";
 
       mainBox.style.width = "auto";
       mainBox.style.height = "auto";
@@ -8862,6 +9002,9 @@
       mainBox.style.height = sH + "px";
       void mainBox.offsetHeight;
 
+      tPage.style.width = cTargetW - 32 + "px";
+      tPage.style.minWidth = cTargetW - 32 + "px";
+
       const easeCurve = "cubic-bezier(0.34, 1.15, 0.64, 1)";
       mainBox.style.transition = `height 0.4s ${easeCurve}, width 0.4s ${easeCurve}`;
       mainBox.style.width = cTargetW + "px";
@@ -8882,6 +9025,8 @@
         tPage.style.filter = "";
         tPage.style.opacity = "";
         tPage.style.transform = "";
+        tPage.style.width = "";
+        tPage.style.minWidth = "";
         pageId = tPageId;
         mainBox.dataset.isAnimating = "false";
         relayout();
@@ -8971,11 +9116,26 @@
     };
 
     if (type === "league" && farmStates.xp) {
-      showConfirmModal(() => {
-        stopFarm("xp");
-        resetBtn("DX_XP_Btn", "RUN");
-        startExecution();
-      });
+      showConfirmModal(
+        "XP Farm is currently running. Do you want to stop it to run Auto League?",
+        () => {
+          stopFarm("xp");
+          resetBtn("DX_XP_Btn", "RUN");
+          startExecution();
+        },
+      );
+      return;
+    }
+
+    if (type === "xp" && farmStates.league) {
+      showConfirmModal(
+        "Auto League is currently running. Do you want to stop it to run XP Farm?",
+        () => {
+          stopFarm("league");
+          resetBtn("DX_League_Btn", "RUN");
+          startExecution();
+        },
+      );
       return;
     }
 
@@ -9018,7 +9178,7 @@
     )
       return;
 
-    if (autoSolverEnabled && !isAutoMode) {
+    if (autoSolverEnabled && !isAutoMode && !solverPausedByUser) {
       toggleAutoSolve("start");
     }
 
@@ -9028,6 +9188,7 @@
     document
       .querySelector('[data-test="quit-button"]')
       ?.addEventListener("click", function outerHandler() {
+        solverPausedByUser = false;
         if (isAutoMode) toggleAutoSolve("stop");
       });
 
@@ -9415,6 +9576,7 @@
                 const initSolveSpeedFixed = ${solveSpeedFixed};
 
                 let isAutoMode = false;
+                let solverPausedByUser = false;
                 let solvingLoopRunning = false;
                 let solveAllRunToken = 0;
                 let isSolveBusy = false;
@@ -9499,6 +9661,34 @@
                     }
                 }
 
+                function solverFindStoryContinue() {
+                    try {
+                        const candidates = [
+                            document.getElementsByClassName('_2neC7')[0],
+                            document.querySelector('[data-test="stories-player-continue"]'),
+                            document.querySelector('[data-test="stories-player-done"]'),
+                            document.querySelector('.FmlUF'),
+                            document.querySelector('.vpDIE')
+                        ];
+                        for (const node of candidates) {
+                            if (!node) continue;
+                            const key = Object.keys(node).find(k => k.startsWith('__reactFiber$') || k.startsWith('__reactInternalInstance$'));
+                            if (!key) continue;
+                            let fiber = node[key];
+                            let depth = 0;
+                            while (fiber && depth < 100) {
+                                const fn = fiber.memoizedProps?.continueStory || fiber.pendingProps?.continueStory;
+                                if (typeof fn === 'function') return fn;
+                                fiber = fiber.return;
+                                depth++;
+                            }
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    return null;
+                }
+
                 async function solverClickNext() {
                     const challengeElement = document.querySelector('[data-test~="challenge"]');
                     let observer = null;
@@ -9515,6 +9705,23 @@
                     }) : Promise.resolve();
 
                     try {
+                        const inStory = location.hostname.includes('stories.duolingo.com') ||
+                            location.pathname.includes('/stories') ||
+                            !!document.querySelector('.FmlUF') ||
+                            !!document.querySelector('[data-test="stories-choice"]') ||
+                            !!document.querySelector('[data-test="story-start"]') ||
+                            !!document.querySelector('[data-test="stories-player-continue"]') ||
+                            !!document.querySelector('[data-test="stories-player-done"]');
+
+                        if (inStory) {
+                            const continueFn = solverFindStoryContinue();
+                            if (continueFn) {
+                                continueFn();
+                                clicked = true;
+                                return;
+                            }
+                        }
+
                         let nextButton = solverFindNextButton();
                         if (nextButton) {
                             nextButton.click();
@@ -9556,11 +9763,12 @@
 
                 function solverDetermineChallengeType() {
                     try {
-                        if (document.getElementsByClassName("FmlUF").length > 0) {
+                        if (document.getElementsByClassName("FmlUF").length > 0 && window.sol && ["arrange", "multiple-choice", "multiple_choice", "select-phrases", "point-to-phrase", "point_to_phrase", "match", "gap-fill", "gap_fill"].includes(window.sol.type)) {
                             if (window.sol.type === "arrange") return "Story Arrange";
-                            else if (window.sol.type === "multiple-choice" || window.sol.type === "select-phrases") return "Story Multiple Choice";
-                            else if (window.sol.type === "point-to-phrase") return "Story Point to Phrase";
+                            else if (window.sol.type === "multiple-choice" || window.sol.type === "multiple_choice" || window.sol.type === "select-phrases") return "Story Multiple Choice";
+                            else if (window.sol.type === "point-to-phrase" || window.sol.type === "point_to_phrase") return "Story Point to Phrase";
                             else if (window.sol.type === "match") return "Story Pairs";
+                            else if (window.sol.type === "gap-fill" || window.sol.type === "gap_fill") return "Story Gap Fill";
                         } else {
                             if (document.querySelectorAll('[data-test*="challenge-speak"]').length > 0) return 'Challenge Speak';
                             else if (window.sol.type === 'syllableTap') return 'Syllable Tap';
@@ -9599,6 +9807,10 @@
                             else if (document.querySelectorAll('[data-test="daily-quest-progress-slide"]').length > 0) return 'Daily Quest Progress';
                             else if (document.querySelectorAll('[data-test="streak-slide"]').length > 0) return 'Streak';
                             else if (document.querySelectorAll('[data-test="leaderboard-slide"]').length > 0) return 'Leaderboard';
+                            else if (window.sol.type === 'translate') return 'Translate';
+                            else if (window.sol.type === 'listenTap') return 'Listen Tap';
+                            else if (window.sol.type === 'listen') return 'Listen Type';
+                            else if (window.sol.type === 'completeReverseTranslation') return 'Complete Reverse';
                             else return false;
                         }
                     } catch (error) {
@@ -9610,6 +9822,72 @@
                 async function solverHandleChallenge(challengeType) {
                     const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+                    async function typeHumanized(element, value, isContentEditable = false) {
+                        const wantsSafe = localStorage.getItem("dx_safe_solver") === "true";
+                        if (!value) return;
+
+                        if (isContentEditable) {
+                            const setter = Object.getOwnPropertyDescriptor(Node.prototype, "textContent").set;
+                            if (!wantsSafe) {
+                                setter.call(element, value);
+                                element.dispatchEvent(new Event('input', { bubbles: true }));
+                                return;
+                            }
+                            const words = String(value).split(' ');
+                            let typed = '';
+                            for (let i = 0; i < words.length; i++) {
+                                typed += (i > 0 ? ' ' : '') + words[i];
+                                setter.call(element, typed);
+                                element.dispatchEvent(new Event('input', { bubbles: true }));
+                                await sleep(110 + Math.random() * 180);
+                            }
+                        } else {
+                            const isTextarea = element.tagName === 'TEXTAREA';
+                            const prototype = isTextarea ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+                            const setter = Object.getOwnPropertyDescriptor(prototype, "value").set;
+                            if (!wantsSafe) {
+                                setter.call(element, value);
+                                element.dispatchEvent(new Event('input', { bubbles: true }));
+                                element.dispatchEvent(new Event('change', { bubbles: true }));
+                                return;
+                            }
+                            const words = String(value).split(' ');
+                            let typed = '';
+                            for (let i = 0; i < words.length; i++) {
+                                typed += (i > 0 ? ' ' : '') + words[i];
+                                setter.call(element, typed);
+                                element.dispatchEvent(new Event('input', { bubbles: true }));
+                                element.dispatchEvent(new Event('change', { bubbles: true }));
+                                await sleep(110 + Math.random() * 180);
+                            }
+                        }
+                    }
+
+                    async function solverClickTokens(correct_tokens) {
+                        if (!correct_tokens) return;
+                        const all_tokens = document.querySelectorAll('[data-test$="challenge-tap-token"]');
+                        const clicked_tokens = [];
+                        for (const correct_token of correct_tokens) {
+                            const matching_elements = Array.from(all_tokens).filter(element => {
+                                const elementText = solverGetCleanButtonText(element);
+                                return elementText === correct_token.trim();
+                            });
+                            if (matching_elements.length > 0) {
+                                const match_index = clicked_tokens.filter(token => {
+                                    const tokenText = solverGetCleanButtonText(token);
+                                    return tokenText === correct_token.trim();
+                                }).length;
+                                if (match_index < matching_elements.length) {
+                                    matching_elements[match_index].click();
+                                    clicked_tokens.push(matching_elements[match_index]);
+                                } else {
+                                    clicked_tokens.push(matching_elements[0]);
+                                }
+                                await sleep(50);
+                            }
+                        }
+                    }
+
                     if (challengeType === 'Challenge Speak' || challengeType === 'Listen Match' || challengeType === 'Listen Speak') {
                         const buttonSkip = document.querySelector('button[data-test="player-skip"]');
                         buttonSkip?.click();
@@ -9617,10 +9895,10 @@
                     } else if (challengeType === 'Challenge Choice' || challengeType === 'Challenge Choice with Text Input') {
                         if (challengeType === 'Challenge Choice with Text Input') {
                             let elm = document.querySelectorAll('[data-test="challenge-text-input"]')[0];
-                            let nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                            nativeInputValueSetter.call(elm, window.sol.correctSolutions ? window.sol.correctSolutions[0].split(/(?<=^\\S+)\\s/)[1] : (window.sol.displayTokens ? window.sol.displayTokens.find(t => t.isBlank).text : window.sol.prompt));
-                            let inputEvent = new Event('input', { bubbles: true });
-                            elm.dispatchEvent(inputEvent);
+                            if (elm) {
+                                const val = window.sol.correctSolutions ? window.sol.correctSolutions[0].split(/(?<=^\S+)\s/)[1] : (window.sol.displayTokens ? window.sol.displayTokens.find(t => t.isBlank).text : window.sol.prompt);
+                                await typeHumanized(elm, val);
+                            }
                         } else if (challengeType === 'Challenge Choice') {
                             document.querySelectorAll("[data-test='challenge-choice']")[window.sol.correctIndex].click();
                         }
@@ -9703,27 +9981,7 @@
                         });
 
                     } else if (challengeType === 'Tokens Run') {
-                        const all_tokens = document.querySelectorAll('[data-test$="challenge-tap-token"]');
-                        const correct_tokens = window.sol.correctTokens;
-                        const clicked_tokens = [];
-                        correct_tokens.forEach(correct_token => {
-                            const matching_elements = Array.from(all_tokens).filter(element => {
-                                const elementText = solverGetCleanButtonText(element);
-                                return elementText === correct_token.trim();
-                            });
-                            if (matching_elements.length > 0) {
-                                const match_index = clicked_tokens.filter(token => {
-                                    const tokenText = solverGetCleanButtonText(token);
-                                    return tokenText === correct_token.trim();
-                                }).length;
-                                if (match_index < matching_elements.length) {
-                                    matching_elements[match_index].click();
-                                    clicked_tokens.push(matching_elements[match_index]);
-                                } else {
-                                    clicked_tokens.push(matching_elements[0]);
-                                }
-                            }
-                        });
+                        await solverClickTokens(window.sol.correctTokens);
 
                     } else if (challengeType === 'Indices Run' || challengeType === 'Fill in the Gap') {
                         if (window.sol.correctIndices) {
@@ -9734,24 +9992,24 @@
 
                     } else if (challengeType === 'Challenge Text Input') {
                         let elm = document.querySelectorAll('[data-test="challenge-text-input"]')[0];
-                        let nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                        nativeInputValueSetter.call(elm, window.sol.correctSolutions ? window.sol.correctSolutions[0] : (window.sol.displayTokens ? window.sol.displayTokens.find(t => t.isBlank).text : window.sol.prompt));
-                        let inputEvent = new Event('input', { bubbles: true });
-                        elm.dispatchEvent(inputEvent);
+                        if (elm) {
+                            const val = window.sol.correctSolutions ? window.sol.correctSolutions[0] : (window.sol.displayTokens ? window.sol.displayTokens.find(t => t.isBlank).text : window.sol.prompt);
+                            await typeHumanized(elm, val);
+                        }
 
                     } else if (challengeType === 'Partial Reverse') {
                         let elm = document.querySelector('[data-test*="challenge-partialReverseTranslate"]')?.querySelector("span[contenteditable]");
-                        let nativeInputNodeTextSetter = Object.getOwnPropertyDescriptor(Node.prototype, "textContent").set;
-                        nativeInputNodeTextSetter.call(elm, window.sol?.displayTokens?.filter(t => t.isBlank)?.map(t => t.text)?.join()?.replaceAll(',', ''));
-                        let inputEvent = new Event('input', { bubbles: true });
-                        elm.dispatchEvent(inputEvent);
+                        if (elm) {
+                            const val = window.sol?.displayTokens?.filter(t => t.isBlank)?.map(t => t.text)?.join('')?.trim();
+                            await typeHumanized(elm, val, true);
+                        }
 
                     } else if (challengeType === 'Challenge Translate Input') {
                         const elm = document.querySelector('textarea[data-test="challenge-translate-input"]');
-                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-                        nativeInputValueSetter.call(elm, window.sol.correctSolutions ? window.sol.correctSolutions[0] : window.sol.prompt);
-                        let inputEvent = new Event('input', { bubbles: true });
-                        elm.dispatchEvent(inputEvent);
+                        if (elm) {
+                            const val = window.sol.correctSolutions ? window.sol.correctSolutions[0] : window.sol.prompt;
+                            await typeHumanized(elm, val);
+                        }
 
                     } else if (challengeType === 'Challenge Name') {
                         let articles = solverFindReact(document.getElementsByClassName(findReactMainElementClass)[0]).props.currentChallenge.articles;
@@ -9762,10 +10020,9 @@
                         let selectedElement = document.querySelector('[data-test="challenge-choice"]:nth-child(' + (matchingIndex + 1) + ')');
                         if (selectedElement) selectedElement.click();
                         let elm = document.querySelector('[data-test="challenge-text-input"]');
-                        let nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                        nativeInputValueSetter.call(elm, remainingValue);
-                        let inputEvent = new Event('input', { bubbles: true });
-                        elm.dispatchEvent(inputEvent);
+                        if (elm) {
+                            await typeHumanized(elm, remainingValue);
+                        }
 
                     } else if (challengeType === 'Type Cloze') {
                         const input = document.querySelector('input[type="text"].b4jqk');
@@ -9776,26 +10033,22 @@
                         if (typeof targetToken?.damageStart === "number") {
                             correctEnding = correctWord.slice(targetToken.damageStart);
                         }
-                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                        nativeInputValueSetter.call(input, correctEnding);
-                        input.dispatchEvent(new Event("input", { bubbles: true }));
-                        input.dispatchEvent(new Event("change", { bubbles: true }));
+                        await typeHumanized(input, correctEnding);
 
                     } else if (challengeType === 'Type Cloze Table') {
                         const tableRows = document.querySelectorAll('tbody tr');
-                        window.sol.displayTableTokens.slice(1).forEach((rowTokens, i) => {
+                        for (let i = 0; i < window.sol.displayTableTokens.slice(1).length; i++) {
+                            const rowTokens = window.sol.displayTableTokens.slice(1)[i];
                             const answerCell = rowTokens[1]?.find(t => typeof t.damageStart === "number");
                             if (answerCell && tableRows[i]) {
                                 const input = tableRows[i].querySelector('input[type="text"].b4jqk');
-                                if (!input) return;
-                                const correctWord = answerCell.text;
-                                const correctEnding = correctWord.slice(answerCell.damageStart);
-                                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                                nativeInputValueSetter.call(input, correctEnding);
-                                input.dispatchEvent(new Event("input", { bubbles: true }));
-                                input.dispatchEvent(new Event("change", { bubbles: true }));
+                                if (input) {
+                                    const correctWord = answerCell.text;
+                                    const correctEnding = correctWord.slice(answerCell.damageStart);
+                                    await typeHumanized(input, correctEnding);
+                                }
                             }
-                        });
+                        }
 
                     } else if (challengeType === 'Tap Cloze Table') {
                         const tableRows = document.querySelectorAll('tbody tr');
@@ -9818,16 +10071,16 @@
 
                     } else if (challengeType === 'Type Complete Table') {
                         const tableRows = document.querySelectorAll('tbody tr');
-                        window.sol.displayTableTokens.slice(1).forEach((rowTokens, i) => {
+                        for (let i = 0; i < window.sol.displayTableTokens.slice(1).length; i++) {
+                            const rowTokens = window.sol.displayTableTokens.slice(1)[i];
                             const answerCell = rowTokens[1]?.find(t => t.isBlank);
-                            if (!answerCell || !tableRows[i]) return;
-                            const input = tableRows[i].querySelector('input[type="text"].b4jqk');
-                            if (!input) return;
-                            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                            nativeInputValueSetter.call(input, answerCell.text);
-                            input.dispatchEvent(new Event("input", { bubbles: true }));
-                            input.dispatchEvent(new Event("change", { bubbles: true }));
-                        });
+                            if (answerCell && tableRows[i]) {
+                                const input = tableRows[i].querySelector('input[type="text"].b4jqk');
+                                if (input) {
+                                    await typeHumanized(input, answerCell.text);
+                                }
+                            }
+                        }
 
                     } else if (challengeType === 'Pattern Tap Complete') {
                         const wordBank = document.querySelector('[data-test="word-bank"], .eSgkc');
@@ -9842,15 +10095,12 @@
                     } else if (challengeType === 'Complete Reverse Translation') {
                         const blankTokens = window.sol.displayTokens.filter(t => t.isBlank);
                         const inputFields = document.querySelectorAll('[data-test="challenge-text-input"]');
-                        inputFields.forEach((input, index) => {
+                        for (let index = 0; index < inputFields.length; index++) {
                             if (blankTokens[index]) {
                                 const answer = blankTokens[index].text;
-                                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                                nativeInputValueSetter.call(input, answer);
-                                input.dispatchEvent(new Event('input', { bubbles: true }));
-                                input.dispatchEvent(new Event('change', { bubbles: true }));
+                                await typeHumanized(inputFields[index], answer);
                             }
-                        });
+                        }
 
                     } else if (challengeType === 'Character Write Drag') {
                         const strokes = window.sol.strokes;
@@ -9982,6 +10232,32 @@
                                 }
                             }
                         }
+
+                    } else if (challengeType === 'Story Pairs') {
+                        const storyButtons = document.querySelectorAll('[data-test*="challenge-tap-token"]:not(span)');
+                        const storyTexts = document.querySelectorAll('[data-test="challenge-tap-token-text"]');
+                        const textToElementMap = new Map();
+                        for (let i = 0; i < storyButtons.length; i++) {
+                            const text = storyTexts[i].innerText.toLowerCase().trim();
+                            textToElementMap.set(text, storyButtons[i]);
+                        }
+                        for (const key in window.sol.dictionary) {
+                            if (window.sol.dictionary.hasOwnProperty(key)) {
+                                const value = window.sol.dictionary[key];
+                                const keyPart = key.split(":")[1].toLowerCase().trim();
+                                const normalizedValue = value.toLowerCase().trim();
+                                const element1 = textToElementMap.get(keyPart);
+                                const element2 = textToElementMap.get(normalizedValue);
+                                if (element1 && !element1.disabled) {
+                                    element1.click();
+                                    await sleep(50);
+                                }
+                                if (element2 && !element2.disabled) {
+                                    element2.click();
+                                    await sleep(50);
+                                }
+                            }
+                        }
                     } else if (challengeType === 'Judge') {
                         const ci = window.sol.correctIndices?.[0] ?? 0;
                         document.querySelectorAll('[data-test="challenge-judge-text"]')[ci]?.click();
@@ -10043,6 +10319,39 @@
                                     break;
                                 }
                             }
+                        }
+
+                    } else if (challengeType === 'Translate') {
+                        const correctSolutions = window.sol.correctSolutions;
+                        if (window.sol.choices) {
+                            await solverClickTokens(window.sol.correctTokens);
+                        } else if (correctSolutions) {
+                            const ta = document.querySelector('textarea[data-test="challenge-translate-input"]');
+                            if (ta) await typeHumanized(ta, correctSolutions[0]);
+                        }
+
+                    } else if (challengeType === 'Listen Tap') {
+                        await solverClickTokens(window.sol.correctTokens);
+
+                    } else if (challengeType === 'Listen Type') {
+                        const answer = window.sol.prompt || window.sol.correctSolutions?.[0] || '';
+                        const ta = document.querySelector('textarea[data-test="challenge-translate-input"]') ||
+                            document.querySelector('[data-test="challenge-text-input"]');
+                        if (ta) await typeHumanized(ta, answer);
+
+                    } else if (challengeType === 'Complete Reverse') {
+                        const blankTokens = window.sol.displayTokens?.filter(t => t.isBlank);
+                        const inputFields = document.querySelectorAll('[data-test="challenge-text-input"]');
+                        if (blankTokens && blankTokens.length > 1 && inputFields.length > 1) {
+                            for (let index = 0; index < inputFields.length; index++) {
+                                if (blankTokens[index]) {
+                                    await typeHumanized(inputFields[index], blankTokens[index].text);
+                                }
+                            }
+                        } else {
+                            const answer = blankTokens?.[0]?.text || window.sol.correctSolutions?.[0] || '';
+                            const input = document.querySelector('[data-test="challenge-text-input"]');
+                            if (input) await typeHumanized(input, answer);
                         }
                     }
                 }
@@ -10257,9 +10566,16 @@
                 }
 
                 function toggleAutoSolve(value) {
-                    if (value === "start") isAutoMode = true;
-                    else if (value === "stop") isAutoMode = false;
-                    else isAutoMode = !isAutoMode;
+                    if (value === "start") {
+                        isAutoMode = true;
+                        solverPausedByUser = false;
+                    } else if (value === "stop") {
+                        isAutoMode = false;
+                        solverPausedByUser = true;
+                    } else {
+                        isAutoMode = !isAutoMode;
+                        solverPausedByUser = !isAutoMode;
+                    }
 
                     const activeSolveAllRunToken = bumpSolveAllRunToken();
 
@@ -10351,10 +10667,11 @@
                         const autoSolverVal = localStorage.getItem('dx_auto_solver') !== null
                             ? localStorage.getItem('dx_auto_solver') === 'true'
                             : initAutoSolver;
-                        if (autoSolverVal && !isAutoMode) {
+                        if (autoSolverVal && !isAutoMode && !solverPausedByUser) {
                             toggleAutoSolve('start');
                         }
                     } else {
+                        solverPausedByUser = false;
                         if (isAutoMode) {
                             toggleAutoSolve('stop');
                         }
@@ -10405,8 +10722,15 @@
 
     window.addEventListener("DX_StateSync", (e) => {
       if (e.detail && typeof e.detail.isAutoMode !== "undefined") {
+        const wasAuto = isAutoMode;
         isAutoMode = e.detail.isAutoMode;
         updateSolveButtonText(isAutoMode ? "PAUSE SOLVE" : "SOLVE ALL");
+        if (wasAuto && !isAutoMode) {
+          solverPausedByUser = true;
+        }
+        if (isAutoMode) {
+          solverPausedByUser = false;
+        }
         if (isAutoMode && (autoPathEnabled || autoPracticeEnabled)) {
           setUiHiddenState(true);
         }
@@ -10804,6 +11128,7 @@
       setTimeout(() => window.location.reload(), 1200);
     });
     wireToggle("DX_SafeStreak_Toggle", "dx_safe_streak", () => {});
+    wireToggle("DX_SafeSolver_Toggle", "dx_safe_solver", () => {});
     wireToggle("DX_AutoJoin_Toggle", "dx_auto_join_league", () => {
       leagueJoinAttempted = false;
     });
@@ -11070,18 +11395,17 @@
 
     const roomInp = document.getElementById("DX_XpRoom_Input");
     const rawRoom = localStorage.getItem("dx_xp_room");
-    const savedRoom = rawRoom === null ? 30 : parseInt(rawRoom) || 0;
+    const savedRoom =
+      rawRoom === null ? 30 : parseInt(rawRoom) >= 0 ? parseInt(rawRoom) : 0;
     if (rawRoom === null) localStorage.setItem("dx_xp_room", "30");
-    roomInp.value = savedRoom > 0 ? savedRoom : "";
+    roomInp.value = savedRoom >= 0 ? savedRoom : "";
 
     roomInp.addEventListener("change", () => {
       let rVal = parseInt(roomInp.value);
-      if (isNaN(rVal) || rVal <= 0) {
+      if (isNaN(rVal) || rVal < 0) {
         rVal = 0;
-      } else {
-        rVal = Math.min(500, Math.max(30, rVal));
       }
-      roomInp.value = rVal > 0 ? rVal : "";
+      roomInp.value = rVal >= 0 ? rVal : "";
       localStorage.setItem("dx_xp_room", rVal);
     });
 
