@@ -11766,17 +11766,50 @@
             const target = e.target;
             suppressScrollRestoreUntil = Date.now() + 2000;
             relayout();
+
+            const doScroll = () => {
+              let container = target.parentElement;
+              while (container && container !== document.body) {
+                const overflowY = window.getComputedStyle(container).overflowY;
+                if (
+                  overflowY === "auto" ||
+                  overflowY === "scroll" ||
+                  container.id === "DX_Main_Box"
+                ) {
+                  break;
+                }
+                container = container.parentElement;
+              }
+              if (container) {
+                let offsetTop = 0;
+                let current = target;
+                while (
+                  current &&
+                  current !== container &&
+                  container.contains(current)
+                ) {
+                  offsetTop += current.offsetTop;
+                  current = current.offsetParent;
+                }
+                const targetScroll =
+                  offsetTop -
+                  container.offsetHeight / 2 +
+                  target.offsetHeight / 2;
+                container.scrollTop = Math.max(0, targetScroll);
+              }
+            };
+
             setTimeout(() => {
               suppressScrollRestoreUntil = Date.now() + 1500;
-              target.scrollIntoView({ behavior: "auto", block: "center" });
+              doScroll();
             }, 100);
             setTimeout(() => {
               suppressScrollRestoreUntil = Date.now() + 1000;
-              target.scrollIntoView({ behavior: "auto", block: "center" });
+              doScroll();
             }, 500);
             setTimeout(() => {
               suppressScrollRestoreUntil = Date.now() + 500;
-              target.scrollIntoView({ behavior: "auto", block: "center" });
+              doScroll();
             }, 1000);
           }
         },
