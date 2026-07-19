@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                DuoXJS
 // @namespace           https://github.com/LibreDuo/DuoXJS
-// @version             1.0.2
+// @version             1.1.0
 // @description         Free userscript utility for Duolingo
 // @author              LibreDuo
 // @license             MIT
@@ -24,6 +24,17 @@
 
 (function () {
   "use strict";
+
+  if (
+    window.location.href.includes("/legendary/") &&
+    !window.location.href.includes("reloaded")
+  ) {
+    window.location.href =
+      window.location.href +
+      (window.location.href.includes("?") ? "&" : "?") +
+      "reloaded";
+    return;
+  }
 
   const localSetItem = window.localStorage.setItem;
   const localStorage = {
@@ -120,8 +131,8 @@
       "https://d35aaqx5ub95lt.cloudfront.net/images/icons/398e4298a3b39ce566050e5c041949ef.svg",
   };
 
-  const dxVersion = "1.0.2";
-  const dxScriptVersion = "1.0.2";
+  const dxVersion = "1.1.0";
+  const dxScriptVersion = "1.1.0";
   const dxUpdateMetaUrl =
     "https://raw.githubusercontent.com/LibreDuo/DuoXJS/main/DuoXJS.meta.js";
   const dxUpdatePageUrl = "https://github.com/LibreDuo/DuoXJS";
@@ -730,9 +741,9 @@
 
         :root {
             --DX-blue: 0, 122, 255;
-            --DX-green: 50, 215, 75;
-            --DX-red: 255, 69, 58;
-            --DX-orange: 255, 159, 10;
+            --DX-green: 52, 199, 89;
+            --DX-red: 255, 59, 48;
+            --DX-orange: 255, 149, 0;
             --dx-link-color: rgb(var(--DX-blue));
 
             --DX-s1: 4px;
@@ -749,9 +760,10 @@
             --DX-r-xl: 22px;
             --DX-corner: 0;
 
-            --DX-ease-bounce: cubic-bezier(0.34, 1.15, 0.64, 1);
-            --DX-ease-out: cubic-bezier(0.25, 1, 0.5, 1);
-            --DX-ease: var(--DX-ease-out);
+            --DX-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --DX-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --DX-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+            --DX-ease: var(--DX-ease-spring);
             --DX-motion-fast: 150ms;
             --DX-motion: 200ms;
             --DX-motion-page: 400ms;
@@ -791,7 +803,7 @@
             font-family: 'DuoFeather', 'din-round';
             font-size: var(--DX-t-title);
             font-weight: 900;
-            letter-spacing: 0.2px;
+            letter-spacing: -0.03em;
             line-height: 1;
         }
 
@@ -830,7 +842,7 @@
         #DX_Root input,
         #DX_Root label,
         #DX_Root div {
-            font-family: 'din-round', 'DuoFeather' !important;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "din-round", "DuoFeather", system-ui, sans-serif !important;
         }
 
         #DX_Root p,
@@ -906,10 +918,10 @@
 
         .DX_Main_Box.dx-hidden {
             opacity: 0 !important;
-            -webkit-filter: blur(6px) !important;
-            filter: blur(6px) !important;
-            -webkit-transform: scale3d(0.96, 0.96, 1) !important;
-            transform: scale3d(0.96, 0.96, 1) !important;
+            -webkit-filter: blur(16px) !important;
+            filter: blur(16px) !important;
+            -webkit-transform: scale3d(0.92, 0.92, 1) !important;
+            transform: scale3d(0.92, 0.92, 1) !important;
             pointer-events: none;
         }
 
@@ -953,34 +965,34 @@
         }
 
         .DX_Main_Box.dx-light {
-            --dx-panel-bg: rgba(255, 255, 255, 0.85);
+            --dx-panel-bg: rgba(255, 255, 255, 0.65);
             background: var(--dx-panel-bg);
-            backdrop-filter: blur(20px) saturate(1.6);
-            -webkit-backdrop-filter: blur(20px) saturate(1.6);
-            outline: 2px solid rgba(229, 229, 229, 1);
-            outline-offset: -2px;
-            box-shadow: 0 18px 50px -12px rgba(17, 32, 46, 0.28), 0 2px 8px rgba(17, 32, 46, 0.06);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            outline: 1px solid rgba(255, 255, 255, 0.4);
+            outline-offset: -1px;
+            box-shadow: 0 16px 40px -10px rgba(17, 32, 46, 0.15), 0 1px 3px rgba(17, 32, 46, 0.05);
             --dx-bg: rgba(255, 255, 255, 0.95);
-            --dx-text: #333;
-            --dx-card-bg: rgba(0, 0, 0, 0.05);
-            --dx-card-hover: rgba(var(--DX-blue), 0.1);
-            --dx-card-border: rgba(229, 229, 229, 1);
+            --dx-text: #1d1d1f;
+            --dx-card-bg: rgba(0, 0, 0, 0.04);
+            --dx-card-hover: rgba(var(--DX-blue), 0.08);
+            --dx-card-border: rgba(0, 0, 0, 0.08);
         }
 
         .DX_Main_Box.dx-dark {
-            --dx-panel-bg: rgba(32, 47, 54, 0.85);
+            --dx-panel-bg: rgba(28, 28, 30, 0.65);
             background: var(--dx-panel-bg);
-            backdrop-filter: blur(20px) saturate(1.6);
-            -webkit-backdrop-filter: blur(20px) saturate(1.6);
-            outline: 2px solid rgba(55, 70, 79, 1);
-            outline-offset: -2px;
-            box-shadow: 0 20px 55px -12px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
-            --dx-bg: rgba(32, 47, 54, 0.95);
-            --dx-text: #fff;
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            outline: 1px solid rgba(255, 255, 255, 0.12);
+            outline-offset: -1px;
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1);
+            --dx-bg: rgba(28, 28, 30, 0.95);
+            --dx-text: #f5f5f7;
             --dx-card-bg: rgba(255, 255, 255, 0.05);
-            --dx-card-hover: rgba(var(--DX-blue), 0.15);
-            --dx-card-border: rgba(55, 70, 79, 1);
-            --dx-link-color: #58a6ff;
+            --dx-card-hover: rgba(var(--DX-blue), 0.12);
+            --dx-card-border: rgba(255, 255, 255, 0.12);
+            --dx-link-color: #007aff;
         }
 
         #duoxjs-hide-button.dx-light {
@@ -1059,6 +1071,7 @@
             color: var(--dx-text);
             margin: 0;
             min-width: 0;
+            letter-spacing: -0.015em;
         }
 
         .DX_T1:has(+ .DX_T2) {
@@ -1073,6 +1086,7 @@
             opacity: 0.6;
             margin: 0;
             min-width: 0;
+            letter-spacing: -0.005em;
         }
 
         .DX_Btn {
@@ -1088,13 +1102,13 @@
             border: none;
             cursor: pointer;
             user-select: none;
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
-            transition: filter var(--DX-motion-fast) var(--DX-ease),
-                        transform var(--DX-motion-fast) var(--DX-ease),
-                        background var(--DX-motion) var(--DX-ease),
-                        outline var(--DX-motion) var(--DX-ease),
-                        color var(--DX-motion) var(--DX-ease);
+            outline: 1px solid rgba(0, 0, 0, 0.08);
+            outline-offset: -1px;
+            transition: filter 100ms var(--DX-ease-spring),
+                        transform 100ms var(--DX-ease-spring),
+                        background var(--DX-motion) var(--DX-ease-spring),
+                        outline var(--DX-motion) var(--DX-ease-spring),
+                        color var(--DX-motion) var(--DX-ease-spring);
         }
 
         .DX_Btn:focus-visible {
@@ -1102,19 +1116,19 @@
         }
 
         .DX_Btn:hover {
-            filter: brightness(0.9);
-            transform: scale(1.03);
+            filter: brightness(0.98);
+            transform: scale(1.02);
         }
 
         .DX_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.94) saturate(1.1);
+            transform: scale(0.97);
         }
 
         .DX_Btn_Blue_Ghost,
         .DX_Btn_Eel {
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             background: var(--dx-card-bg);
         }
 
@@ -1178,8 +1192,8 @@
             min-width: 0;
             gap: 6px;
             border-radius: var(--DX-r-s);
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             background: var(--dx-card-bg);
             position: relative;
             overflow: hidden;
@@ -1220,8 +1234,8 @@
             flex: 0 0 44px;
             cursor: pointer;
             overflow: hidden;
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             transition: filter var(--DX-motion-fast) var(--DX-ease),
                         transform var(--DX-motion-fast) var(--DX-ease),
                         background var(--DX-motion) var(--DX-ease),
@@ -1237,13 +1251,13 @@
         }
 
         .DX_Hash_Btn:hover {
-            filter: brightness(0.9);
-            transform: scale(1.03);
+            filter: brightness(0.98);
+            transform: scale(1.02);
         }
 
         .DX_Hash_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.98);
+            transform: scale(0.97);
         }
 
         .DX_Hash_Btn.dx-inf-active {
@@ -1253,8 +1267,8 @@
         #DX_Root .DX_Hash_Btn:focus,
         #DX_Root .DX_Hash_Btn:focus-visible,
         #DX_Root .DX_Hash_Btn:active {
-            outline: 2px solid var(--dx-card-border) !important;
-            outline-offset: -2px !important;
+            outline: 1px solid var(--dx-card-border) !important;
+            outline-offset: -1px !important;
             box-shadow: none !important;
         }
 
@@ -1303,8 +1317,8 @@
             border: none;
             cursor: pointer;
             user-select: none;
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
+            outline: 1px solid rgba(0, 0, 0, 0.2);
+            outline-offset: -1px;
             background: rgb(var(--DX-blue));
             white-space: nowrap;
             flex-shrink: 0;
@@ -1319,13 +1333,13 @@
         }
 
         .DX_Input_Btn:hover {
-            filter: brightness(0.9);
-            transform: scale(1.03);
+            filter: brightness(0.98);
+            transform: scale(1.02);
         }
 
         .DX_Input_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.98);
+            transform: scale(0.97);
         }
 
         .DX_Btn:disabled,
@@ -1367,8 +1381,8 @@
             cursor: pointer;
             user-select: none;
             flex-shrink: 0;
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
+            outline: 1px solid rgba(0, 0, 0, 0.2);
+            outline-offset: -1px;
             background: rgb(var(--DX-blue));
             white-space: nowrap;
             transition: background var(--DX-motion) var(--DX-ease),
@@ -1382,13 +1396,13 @@
         }
 
         .DX_Sm_Btn:hover {
-            filter: brightness(0.9);
-            transform: scale(1.03);
+            filter: brightness(0.98);
+            transform: scale(1.02);
         }
 
         .DX_Sm_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.98);
+            transform: scale(0.97);
         }
 
 
@@ -1414,7 +1428,7 @@
             cursor: pointer;
             user-select: none;
             flex-shrink: 0;
-            transition: background var(--DX-motion) var(--DX-ease);
+            transition: background 200ms var(--DX-ease-spring);
         }
 
         .DX_Toggle.on {
@@ -1430,16 +1444,23 @@
             border-radius: 6px;
             corner-shape: var(--DX-corner);
             background: #fff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
             -webkit-transform: translate3d(0, 0, 0);
             transform: translate3d(0, 0, 0);
-            -webkit-transition: -webkit-transform var(--DX-motion) var(--DX-ease);
-            transition: transform var(--DX-motion) var(--DX-ease);
+            transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), width 250ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .DX_Toggle.on .DX_Toggle_Knob {
             -webkit-transform: translate3d(24px, 0, 0);
             transform: translate3d(24px, 0, 0);
+        }
+
+        .DX_Toggle:active .DX_Toggle_Knob {
+            width: 27px;
+        }
+
+        .DX_Toggle.on:active .DX_Toggle_Knob {
+            transform: translate3d(19px, 0, 0);
         }
 
         .DX_Select {
@@ -1449,8 +1470,8 @@
             height: 40px;
             border-radius: 8px;
             background: var(--dx-card-bg);
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             color: var(--dx-text);
             font-weight: 700;
             font-size: 13px;
@@ -1490,9 +1511,11 @@
             top: calc(100% + 8px);
             left: 0;
             right: 0;
-            background: var(--dx-bg);
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            background: var(--dx-panel-bg);
+            backdrop-filter: blur(20px) saturate(190%);
+            -webkit-backdrop-filter: blur(20px) saturate(190%);
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             border-radius: 8px;
             corner-shape: var(--DX-corner);
             box-shadow: 0 10px 40px rgba(0, 0, 0, .2);
@@ -1512,7 +1535,6 @@
                         visibility var(--DX-motion) var(--DX-ease),
                         transform var(--DX-motion) var(--DX-ease);
             z-index: 100;
-            backdrop-filter: blur(20px);
         }
 
         .DX_Select.open .DX_Select_Options {
@@ -1713,8 +1735,8 @@
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            outline: 2px solid rgba(229, 229, 229, 1);
-            outline-offset: -2px;
+            outline: 1px solid rgba(229, 229, 229, 1);
+            outline-offset: -1px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             opacity: 0;
             transform: translate3d(0, -40px, 0) scale(0.85);
@@ -1878,7 +1900,7 @@
             padding: 12px 8px;
             box-sizing: border-box;
             border-radius: 12px;
-            outline: 1.5px solid var(--dx-card-border);
+            outline: 1px solid var(--dx-card-border);
             outline-offset: -1px;
             background: var(--dx-card-bg);
             transition: outline-color var(--DX-motion) var(--DX-ease),
@@ -1923,21 +1945,21 @@
             font-weight: 800;
             color: #fff;
             background: rgb(var(--DX-blue));
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
+            outline: 1px solid rgba(0, 0, 0, 0.2);
+            outline-offset: -1px;
             transition: filter var(--DX-motion-fast) var(--DX-ease),
                         transform var(--DX-motion-fast) var(--DX-ease),
                         background var(--DX-motion) var(--DX-ease);
         }
 
         .DX_Shop_Btn:hover {
-            filter: brightness(0.9);
-            transform: scale(1.03);
+            filter: brightness(0.98);
+            transform: scale(1.02);
         }
 
         .DX_Shop_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.98);
+            transform: scale(0.97);
         }
 
         .DX_Shop_Btn:focus-visible {
@@ -2007,8 +2029,8 @@
             border: none;
             -webkit-appearance: none;
             appearance: none;
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             background: var(--dx-card-bg);
             font-size: 14px;
             font-weight: 600;
@@ -2029,7 +2051,7 @@
             padding: 8px 10px;
             box-sizing: border-box;
             border-radius: 8px;
-            outline: 1.5px solid var(--dx-card-border);
+            outline: 1px solid var(--dx-card-border);
             outline-offset: -1px;
             background: var(--dx-card-bg);
         }
@@ -2047,7 +2069,7 @@
             padding: 10px 12px;
             box-sizing: border-box;
             border-radius: 12px;
-            outline: 1.5px solid var(--dx-card-border);
+            outline: 1px solid var(--dx-card-border);
             outline-offset: -1px;
             background: var(--dx-card-bg);
             transition: outline-color var(--DX-motion) var(--DX-ease),
@@ -2122,8 +2144,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
+            outline: 1px solid rgba(0, 0, 0, 0.2);
+            outline-offset: -1px;
             transition: opacity var(--DX-motion) var(--DX-ease),
                         transform var(--DX-motion-fast) var(--DX-ease),
                         outline var(--DX-motion) var(--DX-ease),
@@ -2134,23 +2156,23 @@
         }
         .DX_Acc_Btn:hover {
             opacity: 0.9;
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
         .DX_Acc_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.98);
+            transform: scale(0.97);
         }
         .DX_Acc_Btn.del {
             width: 28px;
             padding: 0;
             background: rgba(var(--DX-red), 0.15);
             color: rgb(var(--DX-red));
-            outline: 2px solid rgba(var(--DX-red), 0.2);
+            outline: 1px solid rgba(var(--DX-red), 0.2);
         }
         .DX_Acc_Btn.del:hover {
             background: rgb(var(--DX-red));
             color: #fff;
-            outline: 2px solid rgba(0, 0, 0, 0.2);
+            outline: 1px solid rgba(0, 0, 0, 0.2);
         }
         .DX_Acc_Btn.del img {
             transition: filter var(--DX-motion) var(--DX-ease);
@@ -2215,8 +2237,8 @@
             white-space: nowrap;
             background: rgb(var(--DX-blue));
             color: #fff;
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
+            outline: 1px solid rgba(0, 0, 0, 0.2);
+            outline-offset: -1px;
             transition: filter var(--DX-motion-fast) var(--DX-ease),
                         transform var(--DX-motion-fast) var(--DX-ease),
                         outline var(--DX-motion) var(--DX-ease),
@@ -2228,13 +2250,13 @@
         }
 
         .DX_Quest_Get_Btn:hover {
-            filter: brightness(0.9);
-            transform: scale(1.03);
+            filter: brightness(0.98);
+            transform: scale(1.02);
         }
 
         .DX_Quest_Get_Btn:active {
-            filter: brightness(0.9);
-            transform: scale(0.96);
+            filter: brightness(0.98);
+            transform: scale(0.97);
         }
 
         .DX_Field_Row,
@@ -2246,6 +2268,13 @@
             align-self: stretch;
             gap: 8px;
             min-width: 0;
+        }
+
+        .DX_Setting_Row .DX_HStack_8 {
+            width: 146px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+            align-self: center !important;
         }
 
         .DX_Stack_Section {
@@ -2287,8 +2316,8 @@
             box-sizing: border-box;
             gap: 6px;
             border-radius: 8px;
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             transition: outline-color var(--DX-motion) var(--DX-ease);
             background: var(--dx-card-bg);
         }
@@ -2313,8 +2342,8 @@
         .DX_Panel_Card {
             align-self: stretch;
             background: var(--dx-card-bg);
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             border-radius: 8px;
             padding: 12px;
             display: flex;
@@ -2337,8 +2366,8 @@
             border-radius: 8px;
             corner-shape: var(--DX-corner);
             background: var(--dx-card-bg);
-            outline: 1.5px solid var(--dx-card-border);
-            outline-offset: -1.5px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             transition: max-height var(--DX-motion-page) var(--DX-ease),
                         opacity var(--DX-motion) var(--DX-ease),
                         padding var(--DX-motion-page) var(--DX-ease);
@@ -2389,24 +2418,37 @@
             justify-content: center;
             align-items: center;
             gap: 6px;
+            border-radius: 8px;
+            corner-shape: var(--DX-corner);
+            font-family: var(--DX-font-stack);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
             color: var(--dx-text);
             background: var(--dx-panel-bg) !important;
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             box-shadow: var(--dx-panel-shadow);
-            backdrop-filter: blur(20px) saturate(1.6);
-            -webkit-backdrop-filter: blur(20px) saturate(1.6);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
             pointer-events: auto !important;
-            transition: background var(--DX-motion) var(--DX-ease),
-                        outline var(--DX-motion) var(--DX-ease),
-                        box-shadow var(--DX-motion) var(--DX-ease),
-                        color var(--DX-motion) var(--DX-ease),
-                        filter var(--DX-motion-fast) var(--DX-ease),
-                        transform var(--DX-motion-fast) var(--DX-ease);
+            transition: background var(--DX-motion) var(--DX-ease-spring),
+                        outline var(--DX-motion) var(--DX-ease-spring),
+                        box-shadow var(--DX-motion) var(--DX-ease-spring),
+                        color var(--DX-motion) var(--DX-ease-spring),
+                        filter var(--DX-motion-fast) var(--DX-ease-spring),
+                        transform var(--DX-motion-fast) var(--DX-ease-spring);
+        }
+
+        #duoxjs-hide-button:hover {
+            filter: brightness(1.04);
+            transform: scale(1.02);
         }
 
         #duoxjs-hide-button:active {
             cursor: grabbing;
+            filter: brightness(0.95);
+            transform: scale(0.96);
         }
 
         #duoxjs-hide-button .DX_Hide_Icon_Stack {
@@ -2475,9 +2517,9 @@
 
         #DX_Root button:focus-visible {
             outline-style: solid !important;
-            outline-width: 2px !important;
-            outline-color: var(--focus-outline, rgba(var(--DX-blue), 0.5)) !important;
-            outline-offset: -2px !important;
+            outline-width: 1px !important;
+            outline-color: var(--focus-outline, rgba(var(--DX-blue), 0.6)) !important;
+            outline-offset: -1px !important;
         }
 
 
@@ -2494,8 +2536,8 @@
         .DX_Shop_Btn:active,
         .DX_Input_Btn:focus,
         .DX_Input_Btn:active {
-            outline: 2px solid rgba(0, 0, 0, 0.2);
-            outline-offset: -2px;
+            outline: 1px solid rgba(0, 0, 0, 0.2);
+            outline-offset: -1px;
         }
 
         .DX_Btn_Blue_Ghost:focus,
@@ -2504,8 +2546,8 @@
         .DX_Btn_Eel:active,
         .DX_Hash_Btn:focus,
         .DX_Hash_Btn:active {
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
         }
 
         .DX_Modal_Overlay {
@@ -2533,8 +2575,8 @@
 
         .DX_Modal_Box {
             background: var(--dx-bg);
-            outline: 2px solid var(--dx-card-border);
-            outline-offset: -2px;
+            outline: 1px solid var(--dx-card-border);
+            outline-offset: -1px;
             border-radius: 16px;
             padding: 20px;
             width: 270px;
@@ -2611,13 +2653,13 @@
         }
 
         #DX_User_Row:hover {
-            filter: brightness(0.9);
+            filter: brightness(0.98);
             transform: scale(1.02);
             background: var(--dx-card-hover);
             outline-color: rgb(var(--DX-blue));
         }
         #DX_User_Row:active {
-            filter: brightness(0.9);
+            filter: brightness(0.98);
             transform: scale(0.97);
         }
 
@@ -2691,10 +2733,10 @@
                         <p class="DX_T2 DX_NoSel" id="DX_Confirm_Modal_Text" style="font-size: 12px; margin-bottom: 6px;">XP Farm is currently running. Do you want to stop it to run Auto League?</p>
                         <div class="DX_HStack_8" style="margin-top: 4px;">
                             <button class="DX_Sm_Btn DX_Btn_Eel DX_NoSel" id="DX_Modal_Cancel" style="flex: 1; outline-color: transparent;">
-                                <span class="DX_Sm_Btn_Label" style="color: var(--dx-text);">CANCEL</span>
+                                <span class="DX_Sm_Btn_Label" style="color: var(--dx-text);">NO</span>
                             </button>
                             <button class="DX_Sm_Btn DX_NoSel" id="DX_Modal_Confirm" style="flex: 1;">
-                                <span class="DX_Sm_Btn_Label" style="color: #fff;">STOP & RUN</span>
+                                <span class="DX_Sm_Btn_Label" style="color: #fff;">YES</span>
                             </button>
                         </div>
                     </div>
@@ -2709,13 +2751,13 @@
                             <span class="DX_T2 DX_Hover_1" id="DX_Version_Btn" style="font-size: 11px; font-weight: 700; letter-spacing: 0.4px; opacity: 0.6; cursor: pointer; align-self: flex-start; line-height: 1;">v${dxVersion}</span>
                         </div>
                         <div class="DX_HStack_8" style="width: auto;">
-                            <div class="DX_Btn DX_Btn_Icon DX_NoSel" id="DX_Web_Btn" style="background: rgb(var(--DX-blue)); outline: 2px solid rgba(255, 255, 255, .18); outline-offset: -2px;">
+                            <div class="DX_Btn DX_Btn_Icon DX_NoSel" id="DX_Web_Btn" style="background: rgb(var(--DX-blue)); outline: 1px solid rgba(255, 255, 255, .18); outline-offset: -1px;">
                                 ${icons.webBtn}
                             </div>
-                            <div class="DX_Btn DX_Btn_Icon DX_NoSel" id="DX_Discord_Btn" style="background: rgb(88, 101, 242); outline: 2px solid rgba(0, 0, 0, .18); outline-offset: -2px;">
+                            <div class="DX_Btn DX_Btn_Icon DX_NoSel" id="DX_Discord_Btn" style="background: rgb(88, 101, 242); outline: 1px solid rgba(0, 0, 0, .18); outline-offset: -1px;">
                                 ${icons.discordBtn}
                             </div>
-                            <div class="DX_Btn DX_Btn_Icon DX_NoSel" id="DX_GitHub_Btn" style="background: #24292e; outline: 2px solid rgba(255, 255, 255, .18); outline-offset: -2px;">
+                            <div class="DX_Btn DX_Btn_Icon DX_NoSel" id="DX_GitHub_Btn" style="background: #24292e; outline: 1px solid rgba(255, 255, 255, .18); outline-offset: -1px;">
                                 ${icons.githubBtn}
                             </div>
                         </div>
@@ -2737,7 +2779,7 @@
                     </div>
                     <div id="DX_Main_Content" class="dx-disabled" style="display: flex; flex-direction: column; gap: 8px; width: 100%; transition: opacity var(--DX-motion) var(--DX-ease), filter var(--DX-motion) var(--DX-ease);">
                         <div class="DX_Divider" id="DX_User_Row_Divider" style="display: none;"></div>
-                        <div class="DX_Profile_Block" id="DX_User_Row" style="display: none; position: relative; background: var(--dx-card-bg); outline: 1.5px solid var(--dx-card-border); outline-offset: -1px; border-radius: 8px; padding: 10px; align-items: center; gap: 8px; cursor: pointer;">
+                        <div class="DX_Profile_Block" id="DX_User_Row" style="display: none; position: relative; background: var(--dx-card-bg); outline: 1px solid var(--dx-card-border); outline-offset: -1px; border-radius: 8px; padding: 10px; align-items: center; gap: 8px; cursor: pointer;">
                             <div class="DX_Avatar" id="DX_Avatar">${icons.avatar}</div>
                             <div class="DX_VStack_4" style="flex: 1 0 0; min-width: 0; align-items: flex-start;">
                                 <p class="DX_T1 DX_NoSel" id="DX_UName" style="font-size: 14px; align-self: stretch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 16px;"></p>
@@ -2833,7 +2875,7 @@
                         <div id="DX_Solver_Sections" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
                             <div class="DX_Farm_Sec">
                                 <div class="DX_HStack_4" style="align-self: stretch; min-width: 0;">
-                                    <p class="DX_T1 DX_NoSel" style="font-size: 14px; font-weight: 600;">How many path lessons to solve?</p>
+                                    <p class="DX_T1 DX_NoSel" style="font-size: 14px; font-weight: 600;">How many lessons to solve?</p>
                                 </div>
                                 <div class="DX_HStack_8">
                                     <button class="DX_Hash_Btn dx-inf-active" id="DX_Path_Hash" data-inf="true" title="Toggle infinite loops">${icons.inf}<span class="DX_Hash_Lbl">Infinite</span></button>
@@ -2846,6 +2888,24 @@
                                 </div>
                                 <div class="DX_Prog_Wrap" id="DX_Path_Prog">
                                     <div class="DX_Prog_Fill" id="DX_Path_Fill"></div>
+                                </div>
+                            </div>
+                            <div class="DX_Divider"></div>
+                            <div class="DX_Farm_Sec">
+                                <div class="DX_HStack_4" style="align-self: stretch; min-width: 0;">
+                                    <p class="DX_T1 DX_NoSel" style="font-size: 14px; font-weight: 600;">How many legendary lessons to solve?</p>
+                                </div>
+                                <div class="DX_HStack_8">
+                                    <button class="DX_Hash_Btn dx-inf-active" id="DX_Legendary_Hash" data-inf="true" title="Toggle infinite loops">${icons.inf}<span class="DX_Hash_Lbl">Infinite</span></button>
+                                    <div class="DX_Input_Wrap dx-inf-hidden">
+                                        <input type="number" class="DX_Input DX_NoSel" id="DX_Legendary_Input" placeholder="Lessons" min="1" disabled value="Infinity">
+                                    </div>
+                                    <button class="DX_Input_Btn DX_NoSel" id="DX_AutoLegendary_Btn" disabled>
+                                        <span class="DX_Btn_Label" id="DX_AutoLegendary_Lbl" style="color: #fff;">RUN</span>
+                                    </button>
+                                </div>
+                                <div class="DX_Prog_Wrap" id="DX_Legendary_Prog">
+                                    <div class="DX_Prog_Fill" id="DX_Legendary_Fill"></div>
                                 </div>
                             </div>
                             <div class="DX_Divider"></div>
@@ -3066,7 +3126,7 @@
 
                             <div class="DX_Setting_Row">
                                 <div class="DX_Row_Text">
-                                    <p class="DX_T1 DX_NoSel">EZ Quiz</p>
+                                    <p class="DX_T1 DX_NoSel">Lesson Shortener</p>
                                     <p class="DX_T2 DX_NoSel">Enable custom lessons and instant stories</p>
                                 </div>
                                 <div class="DX_HStack_8" style="width: auto;">
@@ -3076,7 +3136,7 @@
                             <div class="DX_Divider"></div>
                             <div class="DX_Setting_Row">
                                 <div class="DX_Row_Text">
-                                    <p class="DX_T1 DX_NoSel">EZ Quiz Question Count</p>
+                                    <p class="DX_T1 DX_NoSel">Lesson Shortener Question Count</p>
                                     <p class="DX_T2 DX_NoSel">Set the question count</p>
                                 </div>
                                 <div class="DX_HStack_8" style="width: auto;">
@@ -3190,16 +3250,8 @@
                                     <div class="DX_Toggle" id="DX_AutoStreak_Toggle"><div class="DX_Toggle_Knob"></div></div>
                                 </div>
                             </div>
-                            <div class="DX_Divider"></div>
-                            <div class="DX_Setting_Row">
-                                <div class="DX_Row_Text">
-                                    <p class="DX_T1 DX_NoSel">Auto Quest Saver</p>
-                                    <p class="DX_T2 DX_NoSel">Automatically complete quests on startup</p>
-                                </div>
-                                <div class="DX_HStack_8" style="width: auto;">
-                                    <div class="DX_Toggle" id="DX_AutoQuest_Toggle"><div class="DX_Toggle_Knob"></div></div>
-                                </div>
-                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -3372,7 +3424,7 @@
                         </div>
                     </div>
                     <div class="DX_Divider"></div>
-                    <div id="DX_Terms_Content" class="DX_Scroll_Inner DX_Selectable" style="max-height: 250px; font-size: 11px; line-height: 1.5; color: var(--dx-text); white-space: pre-wrap; padding: 10px; background: var(--dx-card-bg); outline: 1.5px solid var(--dx-card-border); outline-offset: -1px; border-radius: var(--DX-r-s); align-self: stretch; text-align: left;">Loading terms...</div>
+                    <div id="DX_Terms_Content" class="DX_Scroll_Inner DX_Selectable" style="max-height: 250px; font-size: 11px; line-height: 1.5; color: var(--dx-text); white-space: pre-wrap; padding: 10px; background: var(--dx-card-bg); outline: 1px solid var(--dx-card-border); outline-offset: -1px; border-radius: var(--DX-r-s); align-self: stretch; text-align: left;">Loading terms...</div>
                     <div class="DX_Divider"></div>
                     <div class="DX_HStack_8" style="margin-top: 4px;">
                         <button class="DX_Sm_Btn DX_Btn_Eel DX_NoSel" id="DX_Terms_Decline_Btn" style="flex: 1; outline-color: transparent;">
@@ -3701,11 +3753,15 @@
   if (localStorage.getItem("dx_safe_solver") === null) {
     localStorage.setItem("dx_safe_solver", "false");
   }
+
   if (localStorage.getItem("dx_path_inf") === null) {
     localStorage.setItem("dx_path_inf", "true");
   }
   if (localStorage.getItem("dx_practice_inf") === null) {
     localStorage.setItem("dx_practice_inf", "true");
+  }
+  if (localStorage.getItem("dx_legendary_inf") === null) {
+    localStorage.setItem("dx_legendary_inf", "true");
   }
 
   let solverButtonsEnabled =
@@ -3720,10 +3776,12 @@
     parseInt(localStorage.getItem("dx_solve_speed_fixed")) || 400;
   let autoPathEnabled = localStorage.getItem("dx_auto_path") === "true";
   let autoPracticeEnabled = localStorage.getItem("dx_auto_practice") === "true";
+  let autoLegendaryEnabled =
+    localStorage.getItem("dx_auto_legendary") === "true";
   let pathLessonsRemaining = Infinity;
   let practiceLessonsRemaining = Infinity;
+  let legendaryLessonsRemaining = Infinity;
   let hasDecrementedForCurrentLesson = false;
-  let lastHomeTime = 0;
 
   let isAutoMode = false;
   let solverPausedByUser = false;
@@ -3757,7 +3815,7 @@
   let streakKeepBusy = false;
   let autoBlockCohortKey = null;
   let pageId = 1;
-  let bgCheckBusy = false;
+
   let connectBusy = false;
   let refreshStatsBusy = false;
   let questSaverBusy = false;
@@ -3979,6 +4037,48 @@
       farmCtl[type].abort();
       farmCtl[type] = null;
     }
+  }
+
+  function stopAllFarmingTasks() {
+    if (farmStates.xp) {
+      stopFarm("xp");
+      const xpBtn = document.getElementById("DX_XP_Btn");
+      if (xpBtn) resetBtn("DX_XP_Btn", "RUN");
+    }
+    if (farmStates.gem) {
+      stopFarm("gem");
+      const gemBtn = document.getElementById("DX_Gem_Btn");
+      if (gemBtn) resetBtn("DX_Gem_Btn", "RUN");
+    }
+    if (farmStates.streak) {
+      stopFarm("streak");
+      const streakBtn = document.getElementById("DX_Streak_Btn");
+      if (streakBtn) resetBtn("DX_Streak_Btn", "RUN");
+    }
+    if (farmStates.league) {
+      stopFarm("league");
+      const leagueBtn = document.getElementById("DX_League_Btn");
+      if (leagueBtn) resetBtn("DX_League_Btn", "RUN");
+    }
+  }
+
+  function stopAllSolverModes() {
+    autoPathEnabled = false;
+    localStorage.setItem("dx_auto_path", "false");
+    const pathBtn = document.getElementById("DX_AutoPath_Btn");
+    if (pathBtn) resetBtn("DX_AutoPath_Btn", "RUN");
+
+    autoPracticeEnabled = false;
+    localStorage.setItem("dx_auto_practice", "false");
+    const pracBtn = document.getElementById("DX_AutoPractice_Btn");
+    if (pracBtn) resetBtn("DX_AutoPractice_Btn", "RUN");
+
+    autoLegendaryEnabled = false;
+    localStorage.setItem("dx_auto_legendary", "false");
+    const legendaryBtn = document.getElementById("DX_AutoLegendary_Btn");
+    if (legendaryBtn) resetBtn("DX_AutoLegendary_Btn", "RUN");
+
+    window.dispatchEvent(new CustomEvent("DX_StopSolver"));
   }
 
   function waitStop(ms, signal) {
@@ -4325,8 +4425,8 @@
       const isCurrentUser = userId && acc.id == userId;
 
       if (isCurrentUser) {
-        card.style.outline = "2px solid rgba(var(--DX-blue), 0.5)";
-        card.style.outlineOffset = "-2px";
+        card.style.outline = "1px solid rgba(var(--DX-blue), 0.5)";
+        card.style.outlineOffset = "-1px";
         card.style.background = "rgba(var(--DX-blue), 0.08)";
       }
 
@@ -4573,8 +4673,8 @@
     }
 
     btn.style.background = bg;
-    btn.style.outline = `2px solid ${outline}`;
-    btn.style.outlineOffset = "-2px";
+    btn.style.outline = `1px solid ${outline}`;
+    btn.style.outlineOffset = "-1px";
     btn.style.setProperty("--focus-outline", outline);
     labelEl.style.color = color;
     labelEl.textContent = label;
@@ -4673,7 +4773,8 @@
         `;
 
     btn.style.background = "var(--dx-card-bg)";
-    btn.style.outline = "2px solid var(--dx-card-border)";
+    btn.style.outline = "1px solid var(--dx-card-border)";
+    btn.style.outlineOffset = "-1px";
     btn.style.color = "var(--dx-text)";
 
     if (status === "connecting") {
@@ -4737,6 +4838,7 @@
         "DX_Friend_Btn",
         "DX_AutoPath_Btn",
         "DX_AutoPractice_Btn",
+        "DX_AutoLegendary_Btn",
       ].forEach((id) => {
         const element = document.getElementById(id);
         if (element) {
@@ -4746,23 +4848,32 @@
     }
   }
 
-  async function bgCheck() {
-    if (bgCheckBusy) return;
-    bgCheckBusy = true;
-    try {
-      const isLessonActive =
-        window.location.pathname.includes("/lesson") ||
-        window.location.pathname.includes("/practice") ||
-        window.location.pathname.includes("/stories");
-      if (!isLessonActive) {
-        hasDecrementedForCurrentLesson = false;
-        solverPausedByUser = false;
-      }
+  async function onNavChange() {
+    const path = window.location.pathname;
+    const isLesson =
+      path.includes("/lesson") ||
+      path.includes("/practice") ||
+      path.includes("/practice-hub") ||
+      path.includes("/alphabets") ||
+      path.includes("/characters") ||
+      path.includes("/character-practice") ||
+      path.includes("/unit-rewind") ||
+      path.includes("/mistakes-review") ||
+      path.includes("/listen-practice") ||
+      path.includes("/speak-practice") ||
+      path.includes("/stories");
 
-      const isSectionPage =
-        window.location.pathname.includes("/section") &&
-        !window.location.pathname.includes("/sections");
-      if (isSectionPage && !isLessonActive) {
+    if (!isLesson) {
+      hasDecrementedForCurrentLesson = false;
+      solverPausedByUser = false;
+      cachedCurrentCourseData = null;
+    }
+
+    const isSectionPage =
+      path.includes("/section") && !path.includes("/sections");
+    if (isSectionPage && !isLesson) {
+      let attempts = 0;
+      const tryClickSection = () => {
         const buttons = Array.from(
           document.querySelectorAll('button, [role="button"]'),
         );
@@ -4778,76 +4889,107 @@
         });
         if (nextBtn) {
           nextBtn.click();
-          lastHomeTime = 0;
+        } else if (++attempts < 8) {
+          setTimeout(tryClickSection, 500);
         } else {
-          if (lastHomeTime === 0) {
-            lastHomeTime = Date.now();
-          } else if (Date.now() - lastHomeTime > 3000) {
-            window.location.href = "https://duolingo.com/";
-            lastHomeTime = 0;
-          }
+          window.location.href = "https://duolingo.com/";
         }
-        return;
-      }
+      };
+      setTimeout(tryClickSection, 300);
+      return;
+    }
 
-      if (autoPathEnabled) {
-        const isHome =
-          window.location.pathname === "/" ||
-          window.location.pathname === "/learn";
-        if (isHome && !isLessonActive) {
-          const chest = Array.from(document.querySelectorAll("img")).find(
+    if (!isLesson) {
+      const isSolverRunning =
+        autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+      const chest = isSolverRunning
+        ? Array.from(document.querySelectorAll("img")).find(
             (img) =>
               img.src &&
               img.src.includes("09f977a3e299d1418fde0fd053de0beb.svg"),
-          );
-          if (chest) {
-            chest.click();
-            lastHomeTime = Date.now();
-          } else {
-            if (lastHomeTime === 0) {
-              lastHomeTime = Date.now();
-            } else if (Date.now() - lastHomeTime > 3000) {
-              window.location.href = "https://duolingo.com/lesson";
-              lastHomeTime = 0;
-            }
-          }
-        } else {
-          lastHomeTime = 0;
-        }
-      } else if (autoPracticeEnabled) {
-        const isHome =
-          window.location.pathname === "/" ||
-          window.location.pathname === "/learn";
-        if (isHome && !isLessonActive) {
-          if (lastHomeTime === 0) {
-            lastHomeTime = Date.now();
-          } else if (Date.now() - lastHomeTime > 3000) {
-            window.location.href = "https://duolingo.com/practice";
-            lastHomeTime = 0;
-          }
-        } else {
-          lastHomeTime = 0;
-        }
-      }
+          )
+        : null;
 
-      const currentExtractedJwt = getToken();
-      if (currentExtractedJwt && currentExtractedJwt !== oldToken) {
-        oldToken = currentExtractedJwt;
-        await connect(true);
-      } else if (!currentExtractedJwt && oldToken) {
-        oldToken = null;
-        token = null;
-        userId = null;
-        headers = null;
-        user = null;
-        questState = null;
-        currentStatus = null;
-        stopLeaguePolling();
-        updateUi("logged_out");
+      if (chest) {
+        chest.click();
+        let attempts = 0;
+        const dismissInterval = setInterval(() => {
+          const buttons = Array.from(
+            document.querySelectorAll("button, [role='button']"),
+          );
+          const targetBtn = buttons.find((btn) => {
+            const txt = (btn.textContent || btn.innerText || "")
+              .toUpperCase()
+              .trim();
+            return (
+              txt === "CLAIM" ||
+              txt === "CONTINUE" ||
+              txt === "NO THANKS" ||
+              txt === "OK" ||
+              btn.getAttribute("data-test") === "chest-claim" ||
+              btn.getAttribute("data-test") === "claim-button"
+            );
+          });
+          if (targetBtn) {
+            targetBtn.click();
+            clearInterval(dismissInterval);
+            setTimeout(() => {
+              onNavChange();
+            }, 1500);
+          } else if (++attempts > 20) {
+            clearInterval(dismissInterval);
+          }
+        }, 500);
+      } else {
+        if (autoPathEnabled) {
+          const hasActive = await hasActivePathLesson();
+          if (!hasActive) {
+            autoPathEnabled = false;
+            localStorage.setItem("dx_auto_path", "false");
+            resetBtn("DX_AutoPath_Btn", "RUN");
+            notify(
+              "warning",
+              "Auto Lesson Completed",
+              "No unfinished lessons found. Stopping Auto Lesson.",
+            );
+          } else if (autoLegendaryEnabled) {
+            const legendaryUrl = await getLegendaryUrl().catch(() => null);
+            window.location.href =
+              legendaryUrl || "https://duolingo.com/lesson";
+          } else {
+            window.location.href = "https://duolingo.com/lesson";
+          }
+        } else if (autoPracticeEnabled) {
+          if (autoLegendaryEnabled) {
+            const legendaryUrl = await getLegendaryUrl().catch(() => null);
+            window.location.href =
+              legendaryUrl || "https://duolingo.com/practice";
+          } else {
+            window.location.href = "https://duolingo.com/practice";
+          }
+        } else if (autoLegendaryEnabled) {
+          const legendaryUrl = await getLegendaryUrl().catch(() => null);
+          if (legendaryUrl) {
+            window.location.href = legendaryUrl;
+          } else {
+            notify(
+              "warning",
+              "Auto Legendary",
+              "No legendary lesson found to solve. Stopping...",
+            );
+            autoLegendaryEnabled = false;
+            localStorage.setItem("dx_auto_legendary", "false");
+            const legendaryBtn = document.getElementById(
+              "DX_AutoLegendary_Btn",
+            );
+            if (legendaryBtn) resetBtn("DX_AutoLegendary_Btn", "RUN");
+            window.dispatchEvent(new CustomEvent("DX_StopSolver"));
+          }
+        }
       }
-    } finally {
-      bgCheckBusy = false;
     }
+
+    initAutoSolverObserver();
   }
 
   function parseMarkdownToHtml(md) {
@@ -5142,6 +5284,7 @@
         "DX_Friend_Btn",
         "DX_AutoPath_Btn",
         "DX_AutoPractice_Btn",
+        "DX_AutoLegendary_Btn",
       ].forEach((id) => {
         const element = document.getElementById(id);
         if (element) {
@@ -5578,6 +5721,99 @@
     } catch {
     } finally {
       refreshStatsBusy = false;
+    }
+  }
+
+  let cachedCurrentCourseData = null;
+  let currentCourseFetchPromise = null;
+
+  async function fetchCurrentCourse() {
+    if (cachedCurrentCourseData) return cachedCurrentCourseData;
+    if (currentCourseFetchPromise) return currentCourseFetchPromise;
+
+    if (!token || !userId || !headers) return null;
+
+    currentCourseFetchPromise = (async () => {
+      try {
+        const res = await fetchApi(
+          "GET",
+          `https://www.duolingo.com/2017-06-30/users/${userId}?fields=currentCourse&_=${Date.now()}`,
+        );
+        if (res.status === 200) {
+          const d = safeJsonParse(res.responseText, {});
+          cachedCurrentCourseData = d.currentCourse || null;
+          return cachedCurrentCourseData;
+        }
+      } catch (err) {
+        console.error("Error fetching current course:", err);
+      } finally {
+        currentCourseFetchPromise = null;
+      }
+      return null;
+    })();
+
+    return currentCourseFetchPromise;
+  }
+
+  async function hasActivePathLesson() {
+    const course = await fetchCurrentCourse();
+    if (!course || !course.pathSectioned) return true;
+    try {
+      for (let s = 0; s < course.pathSectioned.length; s++) {
+        const section = course.pathSectioned[s];
+        if (!section || !section.units) continue;
+        for (let u = 0; u < section.units.length; u++) {
+          const unit = section.units[u];
+          if (!unit || !unit.levels) continue;
+          const foundActive = unit.levels.some(
+            (l) => l.state === "active" || l.state === "unit_test",
+          );
+          if (foundActive) return true;
+        }
+      }
+      return false;
+    } catch {
+      return true;
+    }
+  }
+
+  async function getLegendaryUrl() {
+    const course = await fetchCurrentCourse();
+    if (!course) return null;
+    try {
+      let ui = -1;
+      let li = -1;
+
+      if (course.pathSectioned && Array.isArray(course.pathSectioned)) {
+        for (let s = 0; s < course.pathSectioned.length; s++) {
+          const section = course.pathSectioned[s];
+          if (!section || !section.units) continue;
+
+          for (let u = 0; u < section.units.length; u++) {
+            const unit = section.units[u];
+            if (!unit || !unit.levels) continue;
+
+            const index = unit.levels.findIndex(
+              (l) => l.state === "passed" && l.type !== "chest",
+            );
+            if (index !== -1 && ui === -1) {
+              ui = unit.unitIndex;
+              li = index;
+              break;
+            }
+          }
+          if (ui !== -1) break;
+        }
+      }
+
+      if (ui === -1 || li === -1) {
+        return null;
+      } else {
+        return `https://www.duolingo.com/lesson/unit/${ui + 1}/legendary/${li + 1}`;
+      }
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   }
 
@@ -6160,6 +6396,9 @@
 
   async function autoKeepStreak() {
     if (localStorage.getItem("dx_auto_keep_streak") !== "true") return;
+    const isSolverRunning =
+      autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+    if (isSolverRunning) return;
     if (!user || streakKeepBusy) return;
     const tz = accountTimezone();
     const t = accountToday(tz);
@@ -6227,6 +6466,9 @@
 
   async function autoReachRank(knownRank) {
     if (localStorage.getItem("dx_auto_reach_rank") !== "true") return;
+    const isSolverRunning =
+      autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+    if (isSolverRunning) return;
     if (!userId || farmStates.league || farmStates.xp) return;
     const target = parseInt(localStorage.getItem("dx_league_target")) || 1;
     const rank = knownRank === undefined ? await getLeagueRank() : knownRank;
@@ -6545,7 +6787,7 @@
     }
   }
 
-  function showConfirmModal(text, onConfirm) {
+  function showConfirmModal(text, onConfirm, onCancel) {
     const modal = document.getElementById("DX_Confirm_Modal");
     const btnCancel = document.getElementById("DX_Modal_Cancel");
     const btnConfirm = document.getElementById("DX_Modal_Confirm");
@@ -6561,7 +6803,10 @@
       btnConfirm.removeEventListener("click", handleConfirm);
     };
 
-    const handleCancel = () => cleanup();
+    const handleCancel = () => {
+      cleanup();
+      if (typeof onCancel === "function") onCancel();
+    };
     const handleConfirm = () => {
       cleanup();
       onConfirm();
@@ -6679,7 +6924,14 @@
 
       if (rank === 0 || rank === null) {
         const autoJoin = localStorage.getItem("dx_auto_join_league") === "true";
-        if (autoJoin && !leagueJoinAttempted && !farmStates.league) {
+        const isSolverRunning =
+          autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+        if (
+          autoJoin &&
+          !isSolverRunning &&
+          !leagueJoinAttempted &&
+          !farmStates.league
+        ) {
           leagueJoinAttempted = true;
           if (pageId === "Extra") updateLeagueDropdown(0);
           notify(
@@ -7742,7 +7994,7 @@
 
     const list = cohort.filter((id) => !blockedSet.has(String(id)));
     if (list.length === 0) {
-      if (!isAuto || autoBlockCohortKey !== cohortKey) {
+      if (!isAuto) {
         notify("info", title, "Everyone in your league is already blocked.");
       }
       autoBlockCohortKey = cohortKey;
@@ -8176,7 +8428,7 @@
         row.style.cssText =
           "align-self: stretch; padding: 8px 10px; border-radius: var(--DX-r-s); corner-shape: var(--DX-corner); gap: 8px; background: var(--dx-card-bg);" +
           (isMe
-            ? " outline: 2px solid rgba(var(--DX-blue), 0.5); outline-offset: -2px; background: rgba(var(--DX-blue), 0.08);"
+            ? " outline: 1px solid rgba(var(--DX-blue), 0.5); outline-offset: -1px; background: rgba(var(--DX-blue), 0.08);"
             : "");
         row.innerHTML = `
                     <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
@@ -8269,7 +8521,9 @@
                 const originalFetch = window.fetch;
                 window.fetch = function (resource, options) {
                     const url = resource instanceof Request ? resource.url : resource;
-                    if (TARGET_URL_REGEX.test(url)) {
+                    const method = resource instanceof Request ? resource.method : ((options && options.method) || 'GET');
+                    const m = method.toUpperCase();
+                    if (m === 'GET' && TARGET_URL_REGEX.test(url)) {
                         return originalFetch.apply(this, arguments).then(async function (response) {
                             const resp = response.clone();
                             let raw = await resp.text();
@@ -8278,7 +8532,7 @@
                                 data.hasPlus = true;
                                 if (!data.trackingProperties || typeof data.trackingProperties !== 'object') data.trackingProperties = {};
                                 data.trackingProperties.has_item_gold_subscription = true;
-                                data.shopItems = CUSTOM_SHOP_ITEMS;
+                                data.shopItems = Object.assign({}, data.shopItems, CUSTOM_SHOP_ITEMS);
                                 raw = JSON.stringify(data);
                             } catch { }
                             let hdrs = response.headers;
@@ -8291,25 +8545,11 @@
 
                 const origOpen = XMLHttpRequest.prototype.open;
                 const origSend = XMLHttpRequest.prototype.send;
-                XMLHttpRequest.prototype.open = function (method, url, ...args) {
-                    this._intercept = TARGET_URL_REGEX.test(url);
-                    this._url = url;
-                    origOpen.call(this, method, url, ...args);
-                };
-                XMLHttpRequest.prototype.send = function () {
-                    if (this._intercept) {
-                        const origChange = this.onreadystatechange;
-                        const xhr = this;
-                        this.onreadystatechange = function () {
-                            if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
-                                try {
-                                    let raw = xhr.responseText;
-                                    try {
                                         let data = JSON.parse(raw);
                                         data.hasPlus = true;
                                         if (!data.trackingProperties || typeof data.trackingProperties !== 'object') data.trackingProperties = {};
                                         data.trackingProperties.has_item_gold_subscription = true;
-                                        data.shopItems = CUSTOM_SHOP_ITEMS;
+                                        data.shopItems = Object.assign({}, data.shopItems, CUSTOM_SHOP_ITEMS);
                                         raw = JSON.stringify(data);
                                     } catch { }
                                     Object.defineProperty(xhr, 'responseText', { writable: true, value: raw });
@@ -8754,14 +8994,14 @@
       toggleLbl.innerText = "Native Mode";
       toggleBtn.style.background = "var(--dx-card-bg)";
       toggleBtn.style.color = "var(--dx-text)";
-      toggleBtn.style.outline = "2px solid var(--dx-card-border)";
-      toggleBtn.style.outlineOffset = "-2px";
+      toggleBtn.style.outline = "1px solid var(--dx-card-border)";
+      toggleBtn.style.outlineOffset = "-1px";
     } else {
       toggleLbl.innerText = "Solver Mode";
       toggleBtn.style.background = "var(--dx-card-bg)";
       toggleBtn.style.color = "var(--dx-text)";
-      toggleBtn.style.outline = "2px solid var(--dx-card-border)";
-      toggleBtn.style.outlineOffset = "-2px";
+      toggleBtn.style.outline = "1px solid var(--dx-card-border)";
+      toggleBtn.style.outlineOffset = "-1px";
     }
 
     if (!animate || wasShown) {
@@ -9167,6 +9407,32 @@
       if (type === "league") farmLeague(numVal);
     };
 
+    const isSolverRunning =
+      autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+    if (isSolverRunning) {
+      const modeName = autoPathEnabled
+        ? "Auto Lesson"
+        : autoPracticeEnabled
+          ? "Auto Practice"
+          : "Auto Legendary";
+      const farmName =
+        type === "xp"
+          ? "XP Farm"
+          : type === "gem"
+            ? "Gem Farm"
+            : type === "streak"
+              ? "Streak Farm"
+              : "Auto League";
+      showConfirmModal(
+        `${modeName} is currently running. Do you want to stop it to run ${farmName}?`,
+        () => {
+          stopAllSolverModes();
+          startExecution();
+        },
+      );
+      return;
+    }
+
     if (type === "league" && farmStates.xp) {
       showConfirmModal(
         "XP Farm is currently running. Do you want to stop it to run Auto League?",
@@ -9191,10 +9457,33 @@
       return;
     }
 
+    if (
+      type === "xp" ||
+      type === "gem" ||
+      type === "streak" ||
+      type === "league"
+    ) {
+      const otherActiveFarms = Object.keys(farmStates).filter(
+        (key) => key !== type && farmStates[key],
+      );
+      if (otherActiveFarms.length > 0) {
+        otherActiveFarms.forEach((activeKey) => {
+          stopFarm(activeKey);
+          const btnId =
+            activeKey === "xp"
+              ? "DX_XP"
+              : activeKey === "gem"
+                ? "DX_Gem"
+                : activeKey === "streak"
+                  ? "DX_Streak"
+                  : "DX_League";
+          resetBtn(`${btnId}_Btn`, "RUN");
+        });
+      }
+    }
+
     startExecution();
   }
-
-  // AUTO SOLVER CODE PORTED FROM DUOLINGO PRO OFC WHAT DO YALL THINKING?
 
   function toggleAutoSolve(value) {
     if (value === "start") {
@@ -9245,13 +9534,22 @@
       });
 
     const nextButton = document.querySelector('[data-test="player-next"]');
+    const skipButton = document.querySelector('[data-test="player-skip"]');
     const storiesContinueButton = document.querySelector(
       '[data-test="stories-player-continue"]',
     );
     const storiesDoneButton = document.querySelector(
       '[data-test="stories-player-done"]',
     );
-    const target = nextButton || storiesContinueButton || storiesDoneButton;
+    const footerButton =
+      document.querySelector('[data-test="player-footer"] button') ||
+      document.querySelector("footer button");
+    const target =
+      nextButton ||
+      skipButton ||
+      storiesContinueButton ||
+      storiesDoneButton ||
+      footerButton;
 
     if (
       document.querySelector('[data-test="story-start"]') &&
@@ -9307,23 +9605,31 @@
 
   let duolingoPROSolveButtonsObserver = null;
   function initAutoSolverObserver() {
-    if (duolingoPROSolveButtonsObserver) return;
+    if (duolingoPROSolveButtonsObserver) {
+      duolingoPROSolveButtonsObserver.disconnect();
+      duolingoPROSolveButtonsObserver = null;
+    }
 
     if (
       document.querySelector(
-        '[data-test="player-next"], [data-test="stories-player-continue"], [data-test="stories-player-done"], [data-test="story-start"]',
+        '[data-test="player-next"], [data-test="player-skip"], [data-test="stories-player-continue"], [data-test="stories-player-done"], [data-test="story-start"], [data-test="player-footer"], footer button',
       )
     ) {
       injectSolverButtons();
     }
 
-    duolingoPROSolveButtonsObserver = new MutationObserver((mutations) => {
+    let _observerTimeout = null;
+    duolingoPROSolveButtonsObserver = new MutationObserver(() => {
+      if (_observerTimeout) return;
       if (
         document.querySelector(
           '[data-test="player-next"], [data-test="stories-player-continue"], [data-test="stories-player-done"], [data-test="story-start"]',
         )
       ) {
-        injectSolverButtons();
+        _observerTimeout = setTimeout(() => {
+          injectSolverButtons();
+          _observerTimeout = null;
+        }, 50);
       }
     });
 
@@ -9366,7 +9672,7 @@
     script.textContent = `
             (function() {
                 const ezQuizLen = "${storedLen}";
-                const STORY_RX = /https?:\\/\\/stories\\.duolingo\\.com\\/api2\\/stories\\//;
+                const STORY_RX = /\\/api2\\/stories\\//;
 
                 function modStory(j) {
                     try {
@@ -9384,6 +9690,8 @@
                 }
 
                 const alphabetOriginalChallenges = {};
+                const storyOriginalChallenges = {};
+                const storyOriginalElements = {};
                 const originalFetch = window.fetch;
                 window.fetch = function(resource, options) {
                     const url = String(resource instanceof Request ? resource.url : resource);
@@ -9393,9 +9701,37 @@
                     if (m === 'PUT' && url.indexOf('/sessions') !== -1 && options && options.body) {
                         try {
                             let bodyData = JSON.parse(options.body);
-                            if (bodyData && bodyData.id && alphabetOriginalChallenges[bodyData.id]) {
-                                bodyData.challenges = alphabetOriginalChallenges[bodyData.id];
-                                delete alphabetOriginalChallenges[bodyData.id];
+                            if (bodyData && bodyData.id) {
+                                if (alphabetOriginalChallenges[bodyData.id]) {
+                                    bodyData.challenges = alphabetOriginalChallenges[bodyData.id];
+                                    delete alphabetOriginalChallenges[bodyData.id];
+                                    options.body = JSON.stringify(bodyData);
+                                } else if (storyOriginalChallenges[bodyData.id]) {
+                                    bodyData.challenges = storyOriginalChallenges[bodyData.id];
+                                    delete storyOriginalChallenges[bodyData.id];
+                                    bodyData.failed = false;
+                                    bodyData.heartsLeft = 5;
+                                    options.body = JSON.stringify(bodyData);
+                                }
+                            }
+                        } catch (e) {}
+                    }
+
+
+
+                                        if (m === 'POST' && url.indexOf('/complete') !== -1 && url.indexOf('/stories/') !== -1) {
+                        try {
+                            const storyId = url.split('/stories/')[1].split('/')[0];
+                            if (storyOriginalElements[storyId] && options && options.body) {
+                                let bodyData = JSON.parse(options.body);
+                                bodyData.elements = storyOriginalElements[storyId];
+                                bodyData.furthestPosition = { elementIndex: bodyData.elements.length - 1, textIndex: 0 };
+                                bodyData.selectedPosition = { elementIndex: bodyData.elements.length - 1, textIndex: 0 };
+                                bodyData.status = "story-end";
+                                bodyData.storyCompleteRequestStatus = "ok";
+                                bodyData.completed = true;
+                                bodyData.failed = false;
+                                bodyData.heartsLeft = 5;
                                 options.body = JSON.stringify(bodyData);
                             }
                         } catch (e) {}
@@ -9404,6 +9740,10 @@
                     if (m === 'GET' && STORY_RX.test(url)) {
                         return originalFetch.apply(this, arguments).then(function(r) {
                             return r.clone().text().then(function(text) {
+                                try {
+                                    const storyId = url.split('/').pop().split('?')[0];
+                                    storyOriginalElements[storyId] = JSON.parse(text).elements;
+                                } catch (e) {}
                                 let hdrs = {};
                                 try { r.headers.forEach((v, k) => hdrs[k] = v); } catch {}
                                 hdrs['content-type'] = 'application/json';
@@ -9419,7 +9759,40 @@
                     if (m === 'POST' && url.indexOf('/sessions') !== -1) {
                         return originalFetch.apply(this, arguments).then(function(r) {
                             return r.clone().json().then(function(data) {
+                                const isStory = (data.type && String(data.type).toLowerCase().indexOf('story') !== -1) ||
+                                                window.location.pathname.includes('/stories');
+                                if (isStory) {
+                                    if (data.id && data.challenges) {
+                                        storyOriginalChallenges[data.id] = JSON.parse(JSON.stringify(data.challenges));
+                                    }
+                                    return r;
+                                }
+                                const isChess = (data.learningLanguage && (String(data.learningLanguage).toLowerCase() === 'chess' || String(data.learningLanguage).toLowerCase() === 'ch')) ||
+                                                (data.type && String(data.type).toUpperCase().indexOf('CHESS') !== -1);
+                                if (isChess) {
+                                    const path = window.location.pathname;
+                                    const isLessonPage = path.includes('/lesson') ||
+                                                         path.includes('/practice') ||
+                                                         path.includes('/practice-hub') ||
+                                                         path.includes('/alphabets') ||
+                                                         path.includes('/characters') ||
+                                                         path.includes('/character-practice') ||
+                                                         path.includes('/stories') ||
+                                                         path.includes('/chess-match');
+                                    if (isLessonPage) {
+                                        const origType = String(data.type).toUpperCase();
+                                        if (origType.indexOf('PRACTICE') !== -1) data.type = 'PRACTICE';
+                                        else if (origType.indexOf('TEST') !== -1 || origType.indexOf('SECTION') !== -1) data.type = 'UNIT_TEST';
+                                        else if (origType.indexOf('LEGENDARY') !== -1) data.type = 'LEGENDARY_0';
+                                        else data.type = 'LESSON';
+                                    } else {
+                                        return r;
+                                    }
+                                }
+                                const isSpecifiedMatch = data.type && String(data.type).toUpperCase().indexOf('SPECIFIED_MATCH_PRACTICE') !== -1;
+
                                 const isDuoRadio = data.metadata && data.metadata.type && data.metadata.type.toUpperCase() === "DUORADIO";
+
                                 if (isDuoRadio) {
                                     data.introLengthMillis = 1;
                                     data.outroPoseShowMillis = 1;
@@ -9456,10 +9829,14 @@
                                     });
                                 } else {
                                     let n = 10;
+                                    const isLegendary = data.type && data.type.indexOf('LEGENDARY') === 0;
                                     if (ezQuizLen === 'default') {
-                                        n = (data.type && data.type.indexOf('LEGENDARY') === 0) ? 2 : 1;
+                                        n = isLegendary ? 2 : 1;
                                     } else {
                                         n = parseInt(ezQuizLen) || 10;
+                                    }
+                                    if (isLegendary && n < 2) {
+                                        n = 2;
                                     }
                                     const ll = data.learningLanguage || 'en';
                                     const fl = data.fromLanguage || 'en';
@@ -9480,7 +9857,7 @@
                                                 svg: "https://simg-ssl.duolingo.com/world-characters/avatars/falstaff_avatar_icon.svg"
                                             }
                                         },
-                                        prompt: "What is the best free tool for Duolingo?",
+                                        prompt: "How this even possible?",
                                         choices: ["DuoXJS by LibreDuo"],
                                         correctIndex: 0,
                                         options: [{
@@ -9537,29 +9914,36 @@
                                             generatorId: "81d5f8beeb27d2b2f8234fea16cb9b20"
                                         }
                                     };
-                                    const isAlphabet = data.type && String(data.type).toLowerCase().indexOf('alphabet') !== -1;
-                                    if (isAlphabet) {
+                                    const isAlphabet = (data.type && String(data.type).toLowerCase().indexOf('alphabet') !== -1) ||
+                                        window.location.pathname.startsWith('/alphabets') ||
+                                        window.location.pathname.startsWith('/characters');
+                                    if (isSpecifiedMatch) {
+                                        if (data.challenges && data.challenges.length > 0) {
+                                            data.challenges = data.challenges.slice(0, 1);
+                                        }
+                                        if (Array.isArray(data.elements)) {
+                                            data.elements = data.elements.filter(el => el.type !== "challenge" || el.challengeIndex < 1);
+                                        }
+                                    } else if (isAlphabet) {
                                         if (data.challenges && data.challenges.length > 0) {
                                             alphabetOriginalChallenges[data.id] = JSON.parse(JSON.stringify(data.challenges));
                                             const firstCh = data.challenges[0];
                                             if (firstCh && firstCh.id) {
-                                                data.challenges = [Object.assign({}, lsChallenge, {
-                                                    id: firstCh.id
-                                                })];
+                                                const baseAlphaId = firstCh.id;
+                                                data.challenges = Array.from({ length: n }, (_, idx) => {
+                                                    const uniqueId = baseAlphaId.substring(0, 24) + String(idx).padStart(8, '0');
+                                                    return Object.assign({}, lsChallenge, { id: uniqueId });
+                                                });
+                                                data.challenges[0] = Object.assign({}, lsChallenge, { id: baseAlphaId });
                                             }
                                         }
+
                                     } else {
                                         const baseId = lsChallenge.id;
                                         data.challenges = Array.from({ length: n }, (_, idx) => {
                                             const uniqueId = baseId.substring(0, 24) + String(idx).padStart(8, '0');
                                             return Object.assign({}, lsChallenge, { id: uniqueId });
                                         });
-                                        if (Array.isArray(data.elements)) {
-                                            data.elements = Array.from({ length: n }, (_, i) => ({
-                                                type: "challenge",
-                                                challengeIndex: i
-                                            }));
-                                        }
                                     }
                                 }
                                 data.adaptiveChallenges = [];
@@ -9581,9 +9965,11 @@
                 XMLHttpRequest.prototype.open = function(method, url, ...args) {
                     const m = (method || '').toUpperCase();
                     this._isStoryGet = m === 'GET' && STORY_RX.test(url);
+                    this._isStoryComplete = m === 'POST' && url.indexOf('/complete') !== -1 && url.indexOf('/stories/') !== -1;
+                    this._storyUrl = url;
                     origOpen.call(this, method, url, ...args);
                 };
-                XMLHttpRequest.prototype.send = function() {
+                XMLHttpRequest.prototype.send = function(body) {
                     if (this._isStoryGet) {
                         const origChange = this.onreadystatechange;
                         const xhr = this;
@@ -9591,6 +9977,8 @@
                             if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
                                 try {
                                     let raw = xhr.responseText;
+                                    const storyId = xhr._storyUrl.split('/').pop().split('?')[0];
+                                    storyOriginalElements[storyId] = JSON.parse(raw).elements;
                                     raw = modStory(raw);
                                     Object.defineProperty(xhr, 'responseText', { writable: true, value: raw });
                                     Object.defineProperty(xhr, 'response', { writable: true, value: raw });
@@ -9599,7 +9987,24 @@
                             if (origChange) origChange.apply(this, arguments);
                         };
                     }
-                    origSend.apply(this, arguments);
+                    if (this._isStoryComplete && body) {
+                        try {
+                            const storyId = this._storyUrl.split('/stories/')[1].split('/')[0];
+                            if (storyOriginalElements[storyId]) {
+                                let bodyData = JSON.parse(body);
+                                bodyData.elements = storyOriginalElements[storyId];
+                                bodyData.furthestPosition = { elementIndex: bodyData.elements.length - 1, textIndex: 0 };
+                                bodyData.selectedPosition = { elementIndex: bodyData.elements.length - 1, textIndex: 0 };
+                                bodyData.status = "story-end";
+                                bodyData.storyCompleteRequestStatus = "ok";
+                                bodyData.completed = true;
+                                bodyData.failed = false;
+                                bodyData.heartsLeft = 5;
+                                body = JSON.stringify(bodyData);
+                            }
+                        } catch (e) {}
+                    }
+                    origSend.call(this, body);
                 };
             })();
         `;
@@ -9791,26 +10196,11 @@
                 }
 
                 function solverGetCleanButtonText(button) {
-                    if (button._cleanText !== undefined) {
-                        return button._cleanText;
-                    }
-                    const rubyElements = button.querySelectorAll('ruby');
-                    let resultText = '';
-                    if (rubyElements.length > 0) {
-                        let text = '';
-                        rubyElements.forEach(ruby => {
-                            const baseTextElements = ruby.querySelectorAll('span[lang]:not(rt)');
-                            baseTextElements.forEach(span => {
-                                text += span.textContent;
-                            });
-                        });
-                        resultText = text.trim();
-                    } else {
-                        const textElement = button.querySelector('[data-test="challenge-tap-token-text"]');
-                        resultText = textElement ? textElement.innerText.trim() : button.innerText.trim();
-                    }
-                    button._cleanText = resultText;
-                    return resultText;
+                    const clone = button.cloneNode(true);
+                    const rts = clone.querySelectorAll('rt');
+                    rts.forEach(rt => rt.remove());
+                    const textElement = clone.querySelector('[data-test="challenge-tap-token-text"]');
+                    return textElement ? textElement.innerText.trim() : clone.innerText.trim();
                 }
 
                 function solverDetermineChallengeType() {
@@ -9822,18 +10212,34 @@
                             else if (window.sol.type === "match") return "Story Pairs";
                             else if (window.sol.type === "gap-fill" || window.sol.type === "gap_fill") return "Story Gap Fill";
                         } else {
+                            if (window.sol && window.sol.type) {
+                                const t = window.sol.type;
+                                if (t === 'patternTapComplete') return 'Pattern Tap Complete';
+                                else if (t === 'syllableTap') return 'Syllable Tap';
+                                else if (t === 'syllableListenTap') return 'Syllable Listen Tap';
+                                else if (t === 'tapCompleteTable') return 'Tap Complete Table';
+                                else if (t === 'typeCloze') return 'Type Cloze';
+                                else if (t === 'typeClozeTable') return 'Type Cloze Table';
+                                else if (t === 'tapClozeTable') return 'Tap Cloze Table';
+                                else if (t === 'typeCompleteTable') return 'Type Complete Table';
+                                else if (t === 'completeReverseTranslation') return 'Complete Reverse Translation';
+                                else if (t === 'listenMatch') return 'Listen Match';
+                                else if (t === 'judge') return 'Judge';
+                                else if (t === 'dialogue' || t === 'characterIntro' || t === 'selectTranscription') return 'Dialogue';
+                                else if (t === 'select' || t === 'characterSelect' || t === 'form' || t === 'readComprehension' || t === 'listenComprehension' || t === 'selectPronunciation') return 'Select Card';
+                                else if (t === 'orderTapComplete') return 'Order Tap Complete';
+                                else if (t === 'gap-fill' || t === 'gap_fill') return 'Story Gap Fill';
+                                else if (t === 'translate') return 'Translate';
+                                else if (t === 'tapComplete' || t === 'tapCloze') return 'Indices Run';
+                                else if (t === 'typeComplete') return 'Challenge Text Input';
+                                else if (t === 'transliterationAssist' || t === 'reverseAssist') return 'Challenge Choice';
+                                else if (t === 'listenTap') return 'Listen Tap';
+                                else if (t === 'listen') return 'Listen Type';
+                                else if (t === 'completeReverseTranslation') return 'Complete Reverse';
+                            }
+
                             if (document.querySelectorAll('[data-test*="challenge-speak"]').length > 0) return 'Challenge Speak';
-                            else if (window.sol.type === 'syllableTap') return 'Syllable Tap';
-                            else if (window.sol.type === 'syllableListenTap') return 'Syllable Listen Tap';
-                            else if (window.sol.type === 'tapCompleteTable') return 'Tap Complete Table';
-                            else if (window.sol.type === 'typeCloze') return 'Type Cloze';
-                            else if (window.sol.type === 'typeClozeTable') return 'Type Cloze Table';
-                            else if (window.sol.type === 'tapClozeTable') return 'Tap Cloze Table';
-                            else if (window.sol.type === 'typeCompleteTable') return 'Type Complete Table';
-                            else if (window.sol.type === 'patternTapComplete') return 'Pattern Tap Complete';
-                            else if (window.sol.type === 'completeReverseTranslation') return 'Complete Reverse Translation';
                             else if (document.querySelectorAll('[data-test*="challenge-name"]').length > 0 && document.querySelectorAll('[data-test="challenge-choice"]').length > 0) return 'Challenge Name';
-                            else if (window.sol.type === 'listenMatch') return 'Listen Match';
                             else if (document.querySelectorAll('[data-test="challenge challenge-characterWrite"]').length > 0) {
                                 if (document.querySelector('g._25Ktp')) return 'Character Write Drag';
                                 else if (document.querySelectorAll('path._1e5Zt').length > 0) return 'Character Write Draw';
@@ -9843,26 +10249,17 @@
                                 if (document.querySelectorAll('[data-test="challenge-text-input"]').length > 0) return 'Challenge Choice with Text Input';
                                 else return 'Challenge Choice';
                             } else if (document.querySelectorAll('[data-test$="challenge-tap-token"]').length > 0) {
-                                if (window.sol.pairs !== undefined) return 'Pairs';
+                                if (window.sol.pairs !== undefined || window.sol.type === 'characterMatch' || window.sol.type === 'match') return 'Pairs';
                                 else if (window.sol.correctTokens !== undefined) return 'Tokens Run';
                                 else if (window.sol.correctIndices !== undefined) return 'Indices Run';
                             } else if (document.querySelectorAll('[data-test="challenge-tap-token-text"]').length > 0) return 'Fill in the Gap';
                             else if (document.querySelectorAll('[data-test="challenge-text-input"]').length > 0) return 'Challenge Text Input';
                             else if (document.querySelectorAll('[data-test*="challenge-partialReverseTranslate"]').length > 0) return 'Partial Reverse';
                             else if (document.querySelectorAll('textarea[data-test="challenge-translate-input"]').length > 0) return 'Challenge Translate Input';
-                            else if (window.sol.type === 'judge') return 'Judge';
-                            else if (window.sol.type === 'dialogue' || window.sol.type === 'characterIntro' || window.sol.type === 'selectTranscription') return 'Dialogue';
-                            else if (window.sol.type === 'select' || window.sol.type === 'characterSelect' || window.sol.type === 'form' || window.sol.type === 'readComprehension' || window.sol.type === 'listenComprehension' || window.sol.type === 'selectPronunciation') return 'Select Card';
-                            else if (window.sol.type === 'orderTapComplete') return 'Order Tap Complete';
-                            else if (window.sol.type === 'gap-fill' || window.sol.type === 'gap_fill') return 'Story Gap Fill';
                             else if (document.querySelectorAll('[data-test="session-complete-slide"]').length > 0) return 'Session Complete';
                             else if (document.querySelectorAll('[data-test="daily-quest-progress-slide"]').length > 0) return 'Daily Quest Progress';
                             else if (document.querySelectorAll('[data-test="streak-slide"]').length > 0) return 'Streak';
                             else if (document.querySelectorAll('[data-test="leaderboard-slide"]').length > 0) return 'Leaderboard';
-                            else if (window.sol.type === 'translate') return 'Translate';
-                            else if (window.sol.type === 'listenTap') return 'Listen Tap';
-                            else if (window.sol.type === 'listen') return 'Listen Type';
-                            else if (window.sol.type === 'completeReverseTranslation') return 'Complete Reverse';
                             else return false;
                         }
                     } catch (error) {
@@ -9921,13 +10318,13 @@
                         const clicked_tokens = [];
                         for (const correct_token of correct_tokens) {
                             const matching_elements = Array.from(all_tokens).filter(element => {
-                                const elementText = solverGetCleanButtonText(element);
-                                return elementText === correct_token.trim();
+                                const elementText = solverGetCleanButtonText(element).toLowerCase().trim();
+                                return elementText === correct_token.toLowerCase().trim();
                             });
                             if (matching_elements.length > 0) {
                                 const match_index = clicked_tokens.filter(token => {
-                                    const tokenText = solverGetCleanButtonText(token);
-                                    return tokenText === correct_token.trim();
+                                    const tokenText = solverGetCleanButtonText(token).toLowerCase().trim();
+                                    return tokenText === correct_token.toLowerCase().trim();
                                 }).length;
                                 if (match_index < matching_elements.length) {
                                     matching_elements[match_index].click();
@@ -9940,7 +10337,9 @@
                         }
                     }
 
+
                     if (challengeType === 'Challenge Speak' || challengeType === 'Listen Match' || challengeType === 'Listen Speak') {
+
                         const buttonSkip = document.querySelector('button[data-test="player-skip"]');
                         buttonSkip?.click();
 
@@ -9956,22 +10355,23 @@
                         }
 
                     } else if (challengeType === 'Pairs') {
-                        let nl = document.querySelectorAll('[data-test*="challenge-tap-token"]:not(span)');
-                        window.sol.pairs?.forEach((pair) => {
+                        const nl = document.querySelectorAll('[data-test*="challenge-tap-token"]:not(span)');
+                        for (const pair of window.sol.pairs || []) {
                             for (let i = 0; i < nl.length; i++) {
-                                if (nl[i].disabled) continue;
-                                const buttonText = solverGetCleanButtonText(nl[i]).toLowerCase();
-                                try {
-                                    if (buttonText === pair.transliteration.toLowerCase().trim() || buttonText === pair.character.toLowerCase().trim()) {
-                                        nl[i].click();
-                                    }
-                                } catch (TypeError) {
-                                    if (buttonText === pair.learningToken.toLowerCase().trim() || buttonText === pair.fromToken.toLowerCase().trim()) {
-                                        nl[i].click();
-                                    }
+                                const btn = nl[i];
+                                if (btn.disabled) continue;
+                                const buttonText = solverGetCleanButtonText(btn).toLowerCase().trim();
+                                const matches =
+                                    buttonText === pair.transliteration?.toLowerCase().trim() ||
+                                    buttonText === pair.character?.toLowerCase().trim() ||
+                                    buttonText === pair.learningToken?.toLowerCase().trim() ||
+                                    buttonText === pair.fromToken?.toLowerCase().trim();
+                                if (matches) {
+                                    btn.click();
+                                    await sleep(50);
                                 }
                             }
-                        });
+                        }
 
                     } else if (challengeType === 'Story Pairs') {
                         const nl = document.querySelectorAll('[data-test*="challenge-tap-token"]:not(span)');
@@ -10037,9 +10437,19 @@
 
                     } else if (challengeType === 'Indices Run' || challengeType === 'Fill in the Gap') {
                         if (window.sol.correctIndices) {
-                            window.sol.correctIndices?.forEach(index => {
-                                document.querySelectorAll('div[data-test="word-bank"] [data-test*="challenge-tap-token"]:not(span)')[index].click();
-                            });
+                            const wordBank = document.querySelector('div[data-test="word-bank"]') || document.querySelector('.eSgkc');
+                            if (wordBank) {
+                                const bankButtons = Array.from(wordBank.querySelectorAll('button[data-test*="challenge-tap-token"]:not(span)'));
+                                for (const index of window.sol.correctIndices) {
+                                    if (index >= 0 && index < bankButtons.length) {
+                                        const button = bankButtons[index];
+                                        if (!button.disabled && button.getAttribute('aria-disabled') !== 'true') {
+                                            button.click();
+                                            await sleep(50);
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                     } else if (challengeType === 'Challenge Text Input') {
@@ -10064,8 +10474,8 @@
                         }
 
                     } else if (challengeType === 'Challenge Name') {
-                        let articles = solverFindReact(document.getElementsByClassName(findReactMainElementClass)[0]).props.currentChallenge.articles;
-                        let correctSolutions = solverFindReact(document.getElementsByClassName(findReactMainElementClass)[0]).props.currentChallenge.correctSolutions[0];
+                        let articles = window.sol.articles;
+                        let correctSolutions = window.sol.correctSolutions[0];
                         let matchingArticle = articles.find(article => correctSolutions.startsWith(article));
                         let matchingIndex = matchingArticle !== undefined ? articles.indexOf(matchingArticle) : null;
                         let remainingValue = correctSolutions.substring(matchingArticle.length);
@@ -10077,7 +10487,7 @@
                         }
 
                     } else if (challengeType === 'Type Cloze') {
-                        const input = document.querySelector('input[type="text"].b4jqk');
+                        const input = document.querySelector('input[type="text"]') || document.querySelector('[data-test="challenge-text-input"]');
                         if (!input) return;
                         let targetToken = window.sol.displayTokens.find(t => t.damageStart !== undefined);
                         let correctWord = targetToken?.text || "";
@@ -10093,7 +10503,7 @@
                             const rowTokens = window.sol.displayTableTokens.slice(1)[i];
                             const answerCell = rowTokens[1]?.find(t => typeof t.damageStart === "number");
                             if (answerCell && tableRows[i]) {
-                                const input = tableRows[i].querySelector('input[type="text"].b4jqk');
+                                const input = tableRows[i].querySelector('input[type="text"]') || tableRows[i].querySelector('input');
                                 if (input) {
                                     const correctWord = answerCell.text;
                                     const correctEnding = correctWord.slice(answerCell.damageStart);
@@ -10127,7 +10537,7 @@
                             const rowTokens = window.sol.displayTableTokens.slice(1)[i];
                             const answerCell = rowTokens[1]?.find(t => t.isBlank);
                             if (answerCell && tableRows[i]) {
-                                const input = tableRows[i].querySelector('input[type="text"].b4jqk');
+                                const input = tableRows[i].querySelector('input[type="text"]') || tableRows[i].querySelector('input');
                                 if (input) {
                                     await typeHumanized(input, answerCell.text);
                                 }
@@ -10139,9 +10549,10 @@
                         if (!wordBank) return;
                         const choices = window.sol.choices;
                         const correctIndex = window.sol.correctIndex ?? 0;
-                        const correctText = choices[correctIndex];
+                        const choice = choices[correctIndex];
+                        const correctText = typeof choice === 'object' ? choice.text : choice;
                         const buttons = Array.from(wordBank.querySelectorAll('button[data-test*="challenge-tap-token"]:not([aria-disabled="true"])'));
-                        const targetButton = buttons.find(btn => solverGetCleanButtonText(btn) === correctText);
+                        const targetButton = buttons.find(btn => solverGetCleanButtonText(btn).toLowerCase().trim() === correctText?.toLowerCase().trim());
                         if (targetButton) targetButton.click();
 
                     } else if (challengeType === 'Complete Reverse Translation') {
@@ -10320,7 +10731,12 @@
                         if (judgeItems.length > 0) {
                             judgeItems[idx]?.click();
                         } else {
-                            document.querySelectorAll('[data-test="challenge-choice"]')[idx]?.click();
+                            const choiceCards = document.querySelectorAll('[data-test="challenge-choice-card"]');
+                            if (choiceCards.length > 0) {
+                                choiceCards[idx]?.click();
+                            } else {
+                                document.querySelectorAll('[data-test="challenge-choice"]')[idx]?.click();
+                            }
                         }
 
                     } else if (challengeType === 'Select Card') {
@@ -10375,7 +10791,7 @@
 
                     } else if (challengeType === 'Translate') {
                         const correctSolutions = window.sol.correctSolutions;
-                        if (window.sol.choices) {
+                        if (window.sol.correctTokens && window.sol.correctTokens.length > 0) {
                             await solverClickTokens(window.sol.correctTokens);
                         } else if (correctSolutions) {
                             const ta = document.querySelector('textarea[data-test="challenge-translate-input"]');
@@ -10414,6 +10830,7 @@
                     return dom?.[key]?.children?.props?.slide;
                 }
 
+
                 function solverFindReact(dom, traverseUp = reactTraverseUp) {
                     if (!dom) return null;
                     const key = Object.keys(dom).find(key => {
@@ -10434,6 +10851,56 @@
                         compFiber = GetCompFiber(compFiber);
                     }
                     return compFiber.stateNode;
+                }
+
+                function solverFindChallenge() {
+                    try {
+                        const mainEl = document.getElementsByClassName(findReactMainElementClass)[0];
+                        const reactObj = solverFindReact(mainEl);
+                        if (reactObj?.props?.currentChallenge) {
+                            return reactObj.props.currentChallenge;
+                        }
+                    } catch {}
+
+                    try {
+                        const selectors = [
+                            '[data-test="player-next"]',
+                            '[data-test="player-skip"]',
+                            '[data-test="quit-button"]',
+                            '#solveAllButton',
+                            '.vpDIE',
+                            '._3yE3H',
+                            '._3TJzR'
+                        ];
+                        for (const sel of selectors) {
+                            const el = document.querySelector(sel);
+                            if (!el) continue;
+                            const key = Object.keys(el).find(k => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
+                            if (!key) continue;
+                            let fiber = el[key];
+                            while (fiber) {
+                                if (fiber.memoizedProps?.currentChallenge) {
+                                    return fiber.memoizedProps.currentChallenge;
+                                }
+                                if (fiber.stateNode?.props?.currentChallenge) {
+                                    return fiber.stateNode.props.currentChallenge;
+                                }
+                                fiber = fiber.return;
+                            }
+                        }
+                    } catch {}
+
+                    try {
+                        const subEl = document.querySelector('.vpDIE') || document.querySelector('._3yE3H');
+                        if (subEl) {
+                            const slide = solverFindSubReact(subEl);
+                            if (slide?.currentChallenge) {
+                                return slide.currentChallenge;
+                            }
+                        }
+                    } catch {}
+
+                    return null;
                 }
 
                 function syncReactLookupByContext() {
@@ -10474,6 +10941,10 @@
                                     localStorage.getItem(
                                         'dx_auto_practice'
                                     ) === 'true';
+                                const autoLegendary =
+                                    localStorage.getItem(
+                                        'dx_auto_legendary'
+                                    ) === 'true';
                                 const pathRem =
                                     parseInt(
                                         localStorage.getItem('dx_path_rem')
@@ -10482,18 +10953,28 @@
                                     parseInt(
                                         localStorage.getItem('dx_practice_rem')
                                     ) || 0;
+                                const legendaryRem =
+                                    parseInt(
+                                        localStorage.getItem('dx_legendary_rem')
+                                    ) || 0;
                                 const pathInf =
                                     localStorage.getItem('dx_path_inf') ===
                                     'true';
                                 const practiceInf =
                                     localStorage.getItem('dx_practice_inf') ===
                                     'true';
+                                const legendaryInf =
+                                    localStorage.getItem('dx_legendary_inf') ===
+                                    'true';
                                 const pathActive =
                                     autoPath && (pathInf || pathRem > 0);
                                 const practiceActive =
                                     autoPractice &&
                                     (practiceInf || practiceRem > 0);
-                                if (pathActive || practiceActive) {
+                                const legendaryActive =
+                                    autoLegendary &&
+                                    (legendaryInf || legendaryRem > 0);
+                                if (pathActive || practiceActive || legendaryActive) {
                                     practiceAgain.click();
                                     return;
                                 }
@@ -10513,7 +10994,14 @@
                             '._3bBpU._1x5JY._1M9iF._36g4N._2YF0P.T7I0c._2EnxW.MYehf',
                             '._2V6ug._1ursp._7jW2t._28UWu._3h0lA._1S2uf._1E9sc',
                             '._1rcV8._1VYyp._1ursp._7jW2t._1gKir',
-                            '._2V6ug._1ursp._7jW2t._3zgLG'
+                            '._2V6ug._1ursp._7jW2t._3zgLG',
+                            '[data-test="hearts-intro-continue-button"]',
+                            '[data-test="legendary-session-end-continue"]',
+                            '[data-test="legendary-start-button"]',
+                            '[data-test="create-profile-later"]',
+                            '[data-test="close-button"]',
+                            '[data-test="streak-goal-option"]',
+                            '[data-test="plus-continue"] + div + button'
                         ];
                         selectorsForSkip.forEach(selector => {
                             const element = document.querySelector(selector);
@@ -10522,7 +11010,7 @@
 
                         window.sol = null;
                         try {
-                            window.sol = solverFindReact(document.getElementsByClassName(findReactMainElementClass)[0])?.props?.currentChallenge ?? null;
+                            window.sol = solverFindChallenge();
                         } catch (error) {
                             window.sol = null;
                             console.log(error);
@@ -10532,7 +11020,8 @@
                         if (window.sol) {
                             challengeType = solverDetermineChallengeType();
                         } else {
-                            challengeType = 'error';
+                            challengeType = solverDetermineChallengeType();
+                            if (challengeType === false) challengeType = 'error';
                         }
 
                         let questionKey;
@@ -10642,11 +11131,27 @@
                         if (solvingLoopRunning || !isAutoMode || runToken !== solveAllRunToken) return;
 
                         solvingLoopRunning = true;
-                        let initialUrl = window.location.href;
 
                         (async function runLoop() {
                             while (isAutoMode && runToken === solveAllRunToken) {
-                                if (window.location.href !== initialUrl) {
+                                const _p = window.location.pathname;
+                                const stillInLesson =
+                                    _p.includes('/lesson') ||
+                                    _p.includes('/practice') ||
+                                    _p.includes('/practice-hub') ||
+                                    _p.includes('/alphabets') ||
+                                    _p.includes('/characters') ||
+                                    _p.includes('/character-practice') ||
+                                    _p.includes('/unit-rewind') ||
+                                    _p.includes('/mistakes-review') ||
+                                    _p.includes('/listen-practice') ||
+                                    _p.includes('/speak-practice') ||
+                                    _p.includes('/stories') ||
+                                    _p.includes('/chess-match') ||
+                                    !!document.querySelector('[data-test="player-next"]') ||
+                                    !!document.querySelector('[data-test="player-skip"]') ||
+                                    !!document.querySelector('[data-test="player-footer"]');
+                                if (!stillInLesson) {
                                     isAutoMode = false;
                                     try {
                                         const btn = document.getElementById("solveAllButton");
@@ -10709,12 +11214,30 @@
                     runAutoSolve();
                 });
 
+
                 window.addEventListener('DX_StopSolver', () => {
+
                     toggleAutoSolve("stop");
                 });
 
                 setInterval(() => {
-                    const isLesson = window.location.pathname.includes('/lesson') || window.location.pathname.includes('/practice') || window.location.pathname.includes('/stories');
+                    const _p = window.location.pathname;
+                    const isLesson =
+                        _p.includes('/lesson') ||
+                        _p.includes('/practice') ||
+                        _p.includes('/practice-hub') ||
+                        _p.includes('/alphabets') ||
+                        _p.includes('/characters') ||
+                        _p.includes('/character-practice') ||
+                        _p.includes('/unit-rewind') ||
+                        _p.includes('/mistakes-review') ||
+                        _p.includes('/listen-practice') ||
+                        _p.includes('/speak-practice') ||
+                        _p.includes('/stories') ||
+                        _p.includes('/chess-match') ||
+                        !!document.querySelector('[data-test="player-next"]') ||
+                        !!document.querySelector('[data-test="player-skip"]') ||
+                        !!document.querySelector('[data-test="player-footer"]');
                     if (isLesson) {
                         const autoSolverVal = localStorage.getItem('dx_auto_solver') !== null
                             ? localStorage.getItem('dx_auto_solver') === 'true'
@@ -10761,8 +11284,74 @@
     }
   }
 
+  function updateLegendaryRemainingUI() {
+    const legendaryInput = document.getElementById("DX_Legendary_Input");
+    if (legendaryInput) {
+      if (legendaryLessonsRemaining === Infinity) {
+        legendaryInput.value = "Infinity";
+      } else {
+        legendaryInput.value = legendaryLessonsRemaining;
+        localStorage.setItem(
+          "dx_legendary_rem",
+          String(legendaryLessonsRemaining),
+        );
+      }
+    }
+  }
+
   function initApp() {
     checkTheme();
+
+    window.addEventListener("DX_UserSync", () => {
+      connect(true);
+    });
+
+    if (!document.getElementById("DX_UserSync_Script")) {
+      const script = document.createElement("script");
+      script.id = "DX_UserSync_Script";
+      script.textContent = `
+        (function() {
+          const TARGET_URL_REGEX = /\\/users\\/\\d+/;
+          const origFetch = window.fetch;
+          window.fetch = function(resource, options) {
+            const url = String(resource instanceof Request ? resource.url : resource);
+            const method = resource instanceof Request ? resource.method : ((options && options.method) || 'GET');
+            const m = method.toUpperCase();
+            if ((m === 'PATCH' || m === 'POST') && TARGET_URL_REGEX.test(url)) {
+              return origFetch.apply(this, arguments).then(function(r) {
+                if (r.status >= 200 && r.status < 300) {
+                  window.dispatchEvent(new CustomEvent("DX_UserSync"));
+                }
+                return r;
+              });
+            }
+            return origFetch.apply(this, arguments);
+          };
+
+          const origOpen = XMLHttpRequest.prototype.open;
+          const origSend = XMLHttpRequest.prototype.send;
+          XMLHttpRequest.prototype.open = function(method, url, ...args) {
+            const m = (method || '').toUpperCase();
+            this._isUserMutation = (m === 'PATCH' || m === 'POST') && TARGET_URL_REGEX.test(url);
+            origOpen.call(this, method, url, ...args);
+          };
+          XMLHttpRequest.prototype.send = function() {
+            if (this._isUserMutation) {
+              const origChange = this.onreadystatechange;
+              const xhr = this;
+              this.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
+                  window.dispatchEvent(new CustomEvent("DX_UserSync"));
+                }
+                if (origChange) origChange.apply(this, arguments);
+              };
+            }
+            origSend.apply(this, arguments);
+          };
+        })();
+      `;
+      document.documentElement.appendChild(script);
+    }
 
     window.addEventListener("DX_Notify", (e) => {
       if (e.detail) notify(e.detail.type, e.detail.title, e.detail.body);
@@ -10783,13 +11372,17 @@
         if (isAutoMode) {
           solverPausedByUser = false;
         }
-        if (isAutoMode && (autoPathEnabled || autoPracticeEnabled)) {
+        if (
+          isAutoMode &&
+          (autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled)
+        ) {
           setUiHiddenState(true);
         }
       }
     });
 
     window.addEventListener("DX_LessonCompleted", () => {
+      cachedCurrentCourseData = null;
       if (!hasDecrementedForCurrentLesson) {
         hasDecrementedForCurrentLesson = true;
 
@@ -10804,7 +11397,7 @@
               if (pathBtn) resetBtn("DX_AutoPath_Btn", "RUN");
               notify(
                 "success",
-                "Path Solver Target Reached",
+                "Lesson Solver Target Reached",
                 "Specified number of lessons solved. Stopping...",
               );
               window.dispatchEvent(new CustomEvent("DX_StopSolver"));
@@ -10828,6 +11421,30 @@
                 "success",
                 "Practice Solver Target Reached",
                 "Specified number of lessons solved. Stopping...",
+              );
+              window.dispatchEvent(new CustomEvent("DX_StopSolver"));
+            }
+          }
+        }
+
+        if (autoLegendaryEnabled) {
+          if (legendaryLessonsRemaining !== Infinity) {
+            legendaryLessonsRemaining = Math.max(
+              0,
+              legendaryLessonsRemaining - 1,
+            );
+            updateLegendaryRemainingUI();
+            if (legendaryLessonsRemaining === 0) {
+              autoLegendaryEnabled = false;
+              localStorage.setItem("dx_auto_legendary", "false");
+              const legendaryBtn = document.getElementById(
+                "DX_AutoLegendary_Btn",
+              );
+              if (legendaryBtn) resetBtn("DX_AutoLegendary_Btn", "RUN");
+              notify(
+                "success",
+                "Legendary Solver Target Reached",
+                "Specified number of legendary lessons solved. Stopping...",
               );
               window.dispatchEvent(new CustomEvent("DX_StopSolver"));
             }
@@ -10858,7 +11475,23 @@
     checkUpdateBannerFromCache();
     checkForUpdates();
     setInterval(checkForUpdates, 6 * 60 * 60 * 1000);
-    setInterval(bgCheck, 2500);
+    setInterval(async () => {
+      const currentExtractedJwt = getToken();
+      if (currentExtractedJwt && currentExtractedJwt !== oldToken) {
+        oldToken = currentExtractedJwt;
+        await connect(true);
+      } else if (!currentExtractedJwt && oldToken) {
+        oldToken = null;
+        token = null;
+        userId = null;
+        headers = null;
+        user = null;
+        questState = null;
+        currentStatus = null;
+        stopLeaguePolling();
+        updateUi("logged_out");
+      }
+    }, 10000);
     setInterval(async () => {
       if (!user) return;
       try {
@@ -10875,7 +11508,7 @@
       }
     }, 30000);
 
-    ["XP", "Gem", "Streak", "Path", "Practice"].forEach(toggleInf);
+    ["XP", "Gem", "Streak", "Path", "Practice", "Legendary"].forEach(toggleInf);
 
     document
       .getElementById("DX_TopSettings_Btn")
@@ -11183,10 +11816,40 @@
       leagueJoinAttempted = false;
     });
     wireToggle("DX_AutoReach_Toggle", "dx_auto_reach_rank", (on) => {
-      if (on) autoReachRank();
+      if (on) {
+        const isSolverRunning =
+          autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+        if (isSolverRunning) {
+          notify(
+            "warning",
+            "Conflict",
+            "Auto Reach Rank cannot be enabled while Auto Solver is active.",
+          );
+          const el = document.getElementById("DX_AutoReach_Toggle");
+          if (el) el.classList.remove("on");
+          localStorage.setItem("dx_auto_reach_rank", "false");
+        } else {
+          autoReachRank();
+        }
+      }
     });
     wireToggle("DX_AutoStreak_Toggle", "dx_auto_keep_streak", (on) => {
-      if (on) autoKeepStreak();
+      if (on) {
+        const isSolverRunning =
+          autoPathEnabled || autoPracticeEnabled || autoLegendaryEnabled;
+        if (isSolverRunning) {
+          notify(
+            "warning",
+            "Conflict",
+            "Auto Keep Streak cannot be enabled while Auto Solver is active.",
+          );
+          const el = document.getElementById("DX_AutoStreak_Toggle");
+          if (el) el.classList.remove("on");
+          localStorage.setItem("dx_auto_keep_streak", "false");
+        } else {
+          autoKeepStreak();
+        }
+      }
     });
     wireToggle("DX_AutoBlock_Toggle", "dx_auto_block_league", (on) => {
       if (on) autoBlockLeague();
@@ -11211,7 +11874,11 @@
     });
     wireToggle("DX_EZQuiz_Toggle", "dx_ez_quiz", () => {
       clearPrefetchedSessionsCache();
-      notify("info", "EZ Quiz", "Reloading page to apply the change...");
+      notify(
+        "info",
+        "Lesson Shortener",
+        "Reloading page to apply the change...",
+      );
       setTimeout(() => window.location.reload(), 1200);
     });
 
@@ -11284,48 +11951,77 @@
           autoPathEnabled = false;
           localStorage.setItem("dx_auto_path", "false");
           resetBtn("DX_AutoPath_Btn", "RUN");
-          notify("info", "Auto Path", "Auto Path Solver stopped.");
+          notify("info", "Auto Lesson", "Auto Lesson Solver stopped.");
         } else {
-          if (autoPracticeEnabled) {
-            autoPracticeEnabled = false;
-            localStorage.setItem("dx_auto_practice", "false");
-            resetBtn("DX_AutoPractice_Btn", "RUN");
-          }
-          const pathHash = document.getElementById("DX_Path_Hash");
-          const pathInput = document.getElementById("DX_Path_Input");
-          const isInf =
-            pathHash && pathHash.getAttribute("data-inf") === "true";
-          let lessonsCount = Infinity;
-          if (!isInf && pathInput) {
-            const val = parseInt(pathInput.value);
-            if (isNaN(val) || val <= 0) {
-              notify(
-                "warning",
-                "Invalid Input",
-                "Please enter a valid number of lessons.",
-              );
-              return;
+          const startPathExecution = () => {
+            if (autoPracticeEnabled) {
+              autoPracticeEnabled = false;
+              localStorage.setItem("dx_auto_practice", "false");
+              resetBtn("DX_AutoPractice_Btn", "RUN");
             }
-            lessonsCount = val;
+
+            const pathHash = document.getElementById("DX_Path_Hash");
+            const pathInput = document.getElementById("DX_Path_Input");
+            const isInf =
+              pathHash && pathHash.getAttribute("data-inf") === "true";
+            let lessonsCount = Infinity;
+            if (!isInf && pathInput) {
+              const val = parseInt(pathInput.value);
+              if (isNaN(val) || val <= 0) {
+                notify(
+                  "warning",
+                  "Invalid Input",
+                  "Please enter a valid number of lessons.",
+                );
+                return;
+              }
+              lessonsCount = val;
+            }
+            autoPathEnabled = true;
+            pathLessonsRemaining = lessonsCount;
+            localStorage.setItem("dx_auto_path", "true");
+            localStorage.setItem("dx_path_inf", isInf ? "true" : "false");
+            localStorage.setItem(
+              "dx_path_rem",
+              isInf ? "0" : String(lessonsCount),
+            );
+            stopBtn("DX_AutoPath_Btn");
+            autoSolverEnabled = true;
+            localStorage.setItem("dx_auto_solver", "true");
+            const solverTog = document.getElementById("DX_AutoSolver_Toggle");
+            if (solverTog) solverTog.classList.add("on");
+            notify(
+              "success",
+              "Auto Lesson",
+              `Auto Lesson Solver started (${isInf ? "Infinite" : lessonsCount + " lessons"}).`,
+            );
+            cachedCurrentCourseData = null;
+            onNavChange();
+          };
+
+          const isFarmRunning =
+            farmStates.xp ||
+            farmStates.gem ||
+            farmStates.streak ||
+            farmStates.league;
+          if (isFarmRunning) {
+            const farmName = farmStates.xp
+              ? "XP Farm"
+              : farmStates.gem
+                ? "Gem Farm"
+                : farmStates.streak
+                  ? "Streak Farm"
+                  : "Auto League";
+            showConfirmModal(
+              `${farmName} is currently running. Do you want to stop it to run Auto Lesson?`,
+              () => {
+                stopAllFarmingTasks();
+                startPathExecution();
+              },
+            );
+          } else {
+            startPathExecution();
           }
-          autoPathEnabled = true;
-          pathLessonsRemaining = lessonsCount;
-          localStorage.setItem("dx_auto_path", "true");
-          localStorage.setItem("dx_path_inf", isInf ? "true" : "false");
-          localStorage.setItem(
-            "dx_path_rem",
-            isInf ? "0" : String(lessonsCount),
-          );
-          stopBtn("DX_AutoPath_Btn");
-          autoSolverEnabled = true;
-          localStorage.setItem("dx_auto_solver", "true");
-          const solverTog = document.getElementById("DX_AutoSolver_Toggle");
-          if (solverTog) solverTog.classList.add("on");
-          notify(
-            "success",
-            "Auto Path",
-            `Auto Path Solver started (${isInf ? "Infinite" : lessonsCount + " lessons"}).`,
-          );
         }
       });
     }
@@ -11368,46 +12064,184 @@
           resetBtn("DX_AutoPractice_Btn", "RUN");
           notify("info", "Auto Practice", "Auto Practice Mode stopped.");
         } else {
-          if (autoPathEnabled) {
-            autoPathEnabled = false;
-            localStorage.setItem("dx_auto_path", "false");
-            resetBtn("DX_AutoPath_Btn", "RUN");
-          }
-          const pracHash = document.getElementById("DX_Practice_Hash");
-          const pracInput = document.getElementById("DX_Practice_Input");
-          const isInf =
-            pracHash && pracHash.getAttribute("data-inf") === "true";
-          let lessonsCount = Infinity;
-          if (!isInf && pracInput) {
-            const val = parseInt(pracInput.value);
-            if (isNaN(val) || val <= 0) {
-              notify(
-                "warning",
-                "Invalid Input",
-                "Please enter a valid number of lessons.",
-              );
-              return;
+          const startPracticeExecution = () => {
+            if (autoPathEnabled) {
+              autoPathEnabled = false;
+              localStorage.setItem("dx_auto_path", "false");
+              resetBtn("DX_AutoPath_Btn", "RUN");
             }
-            lessonsCount = val;
+
+            const pracHash = document.getElementById("DX_Practice_Hash");
+            const pracInput = document.getElementById("DX_Practice_Input");
+            const isInf =
+              pracHash && pracHash.getAttribute("data-inf") === "true";
+            let lessonsCount = Infinity;
+            if (!isInf && pracInput) {
+              const val = parseInt(pracInput.value);
+              if (isNaN(val) || val <= 0) {
+                notify(
+                  "warning",
+                  "Invalid Input",
+                  "Please enter a valid number of lessons.",
+                );
+                return;
+              }
+              lessonsCount = val;
+            }
+            autoPracticeEnabled = true;
+            practiceLessonsRemaining = lessonsCount;
+            localStorage.setItem("dx_auto_practice", "true");
+            localStorage.setItem("dx_practice_inf", isInf ? "true" : "false");
+            localStorage.setItem(
+              "dx_practice_rem",
+              isInf ? "0" : String(lessonsCount),
+            );
+            stopBtn("DX_AutoPractice_Btn");
+            autoSolverEnabled = true;
+            localStorage.setItem("dx_auto_solver", "true");
+            const solverTog = document.getElementById("DX_AutoSolver_Toggle");
+            if (solverTog) solverTog.classList.add("on");
+            notify(
+              "success",
+              "Auto Practice",
+              `Auto Practice Mode started (${isInf ? "Infinite" : lessonsCount + " lessons"}).`,
+            );
+            cachedCurrentCourseData = null;
+            onNavChange();
+          };
+
+          const isFarmRunning =
+            farmStates.xp ||
+            farmStates.gem ||
+            farmStates.streak ||
+            farmStates.league;
+          if (isFarmRunning) {
+            const farmName = farmStates.xp
+              ? "XP Farm"
+              : farmStates.gem
+                ? "Gem Farm"
+                : farmStates.streak
+                  ? "Streak Farm"
+                  : "Auto League";
+            showConfirmModal(
+              `${farmName} is currently running. Do you want to stop it to run Auto Practice?`,
+              () => {
+                stopAllFarmingTasks();
+                startPracticeExecution();
+              },
+            );
+          } else {
+            startPracticeExecution();
           }
-          autoPracticeEnabled = true;
-          practiceLessonsRemaining = lessonsCount;
-          localStorage.setItem("dx_auto_practice", "true");
-          localStorage.setItem("dx_practice_inf", isInf ? "true" : "false");
-          localStorage.setItem(
-            "dx_practice_rem",
-            isInf ? "0" : String(lessonsCount),
-          );
-          stopBtn("DX_AutoPractice_Btn");
-          autoSolverEnabled = true;
-          localStorage.setItem("dx_auto_solver", "true");
-          const solverTog = document.getElementById("DX_AutoSolver_Toggle");
-          if (solverTog) solverTog.classList.add("on");
-          notify(
-            "success",
-            "Auto Practice",
-            `Auto Practice Mode started (${isInf ? "Infinite" : lessonsCount + " lessons"}).`,
-          );
+        }
+      });
+    }
+
+    const autoLegendaryBtn = document.getElementById("DX_AutoLegendary_Btn");
+    if (autoLegendaryBtn) {
+      if (autoLegendaryEnabled) {
+        stopBtn("DX_AutoLegendary_Btn");
+        const legendaryInf =
+          localStorage.getItem("dx_legendary_inf") === "true";
+        const legendaryRem =
+          parseInt(localStorage.getItem("dx_legendary_rem")) || 1;
+        legendaryLessonsRemaining = legendaryInf ? Infinity : legendaryRem;
+        const legendaryHash = document.getElementById("DX_Legendary_Hash");
+        const legendaryInput = document.getElementById("DX_Legendary_Input");
+        if (legendaryHash && legendaryInput) {
+          if (legendaryInf) {
+            legendaryHash.innerHTML =
+              icons.inf + '<span class="DX_Hash_Lbl">Infinite</span>';
+            legendaryHash.setAttribute("data-inf", "true");
+            legendaryHash.classList.add("dx-inf-active");
+            legendaryInput.parentElement.classList.add("dx-inf-hidden");
+            legendaryInput.disabled = true;
+            legendaryInput.value = "Infinity";
+          } else {
+            legendaryHash.innerHTML = icons.hash;
+            legendaryHash.setAttribute("data-inf", "false");
+            legendaryHash.classList.remove("dx-inf-active");
+            legendaryInput.parentElement.classList.remove("dx-inf-hidden");
+            legendaryInput.disabled = false;
+            legendaryInput.value = legendaryRem;
+          }
+        }
+      } else {
+        resetBtn("DX_AutoLegendary_Btn", "RUN");
+      }
+
+      autoLegendaryBtn.addEventListener("click", () => {
+        if (autoLegendaryEnabled) {
+          autoLegendaryEnabled = false;
+          localStorage.setItem("dx_auto_legendary", "false");
+          resetBtn("DX_AutoLegendary_Btn", "RUN");
+          notify("info", "Auto Legendary", "Auto Legendary Solver stopped.");
+        } else {
+          const startLegendaryExecution = () => {
+            const legendaryHash = document.getElementById("DX_Legendary_Hash");
+            const legendaryInput =
+              document.getElementById("DX_Legendary_Input");
+            const isInf =
+              legendaryHash &&
+              legendaryHash.getAttribute("data-inf") === "true";
+            let lessonsCount = Infinity;
+            if (!isInf && legendaryInput) {
+              const val = parseInt(legendaryInput.value);
+              if (isNaN(val) || val <= 0) {
+                notify(
+                  "warning",
+                  "Invalid Input",
+                  "Please enter a valid number of lessons.",
+                );
+                return;
+              }
+              lessonsCount = val;
+            }
+            autoLegendaryEnabled = true;
+            legendaryLessonsRemaining = lessonsCount;
+            localStorage.setItem("dx_auto_legendary", "true");
+            localStorage.setItem("dx_legendary_inf", isInf ? "true" : "false");
+            localStorage.setItem(
+              "dx_legendary_rem",
+              isInf ? "0" : String(lessonsCount),
+            );
+            stopBtn("DX_AutoLegendary_Btn");
+            autoSolverEnabled = true;
+            localStorage.setItem("dx_auto_solver", "true");
+            const solverTog = document.getElementById("DX_AutoSolver_Toggle");
+            if (solverTog) solverTog.classList.add("on");
+            notify(
+              "success",
+              "Auto Legendary",
+              `Auto Legendary Solver started (${isInf ? "Infinite" : lessonsCount + " lessons"}).`,
+            );
+            cachedCurrentCourseData = null;
+            onNavChange();
+          };
+
+          const isFarmRunning =
+            farmStates.xp ||
+            farmStates.gem ||
+            farmStates.streak ||
+            farmStates.league;
+          if (isFarmRunning) {
+            const farmName = farmStates.xp
+              ? "XP Farm"
+              : farmStates.gem
+                ? "Gem Farm"
+                : farmStates.streak
+                  ? "Streak Farm"
+                  : "Auto League";
+            showConfirmModal(
+              `${farmName} is currently running. Do you want to stop it to run Auto Legendary?`,
+              () => {
+                stopAllFarmingTasks();
+                startLegendaryExecution();
+              },
+            );
+          } else {
+            startLegendaryExecution();
+          }
         }
       });
     }
@@ -11738,7 +12572,11 @@
         if (pSel.id === "DX_EZQuizLength_Select") {
           localStorage.setItem("dx_ez_quiz_len", sVal);
           clearPrefetchedSessionsCache();
-          notify("info", "EZ Quiz", "Reloading page to apply the change...");
+          notify(
+            "info",
+            "Lesson Shortener",
+            "Reloading page to apply the change...",
+          );
           setTimeout(() => window.location.reload(), 1200);
         }
         syncMenuOpen();
@@ -11847,6 +12685,19 @@
       });
     }
     initAutoSolverObserver();
+
+    ["pushState", "replaceState"].forEach((method) => {
+      const orig = history[method];
+      history[method] = function () {
+        const res = orig.apply(this, arguments);
+        setTimeout(() => onNavChange(), 300);
+        return res;
+      };
+    });
+    window.addEventListener("popstate", () =>
+      setTimeout(() => onNavChange(), 300),
+    );
+    onNavChange();
 
     document.addEventListener("mouseup", () => {
       setTimeout(() => {
